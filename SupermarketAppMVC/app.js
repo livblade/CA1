@@ -40,6 +40,17 @@ app.use(session({
 
 app.use(flash());
 
+// expose flash messages and current user to all views
+app.use((req, res, next) => {
+    res.locals.messages = {
+        success: req.flash('success'),
+        error: req.flash('error'),
+        info: req.flash('info')
+    };
+    res.locals.user = req.session ? req.session.user : null;
+    next();
+});
+
 // Middleware to check if user is logged in
 const checkAuthenticated = (req, res, next) => {
     if (req.session.user) {
@@ -111,6 +122,11 @@ app.get('/inventory', checkAuthenticated, checkAdmin, (req, res, next) => {
 // Render add product form (no DB access needed here)
 app.get('/addProduct', checkAuthenticated, checkAdmin, (req, res) => {
     res.render('addProduct', {user: req.session.user } ); 
+});
+
+// Add: handle form POST from /addProduct (match form action)
+app.post('/addProduct', checkAuthenticated, checkAdmin, upload.single('image'), (req, res, next) => {
+    return productController.addProduct(req, res, next);
 });
 
 // Render update product form - delegate to controller (controller may render the specific view)
@@ -213,9 +229,51 @@ app.get('/cart', checkAuthenticated, (req, res) => {
     res.render('cart', { cart, user: req.session.user, total });
 });
 
+// NEW: cart management endpoints
+app.post('/cart/add/:id', checkAuthenticated, (req, res, next) => {
+    // delegate adding to cart to controller
+    return productController.addToCart(req, res, next);
+});
+
+app.post('/cart/update', checkAuthenticated, (req, res, next) => {
+    // expects body: productId, quantity
+    return productController.updateCartItem(req, res, next);
+});
+
+app.post('/cart/remove/:id', checkAuthenticated, (req, res, next) => {
+    return productController.removeFromCart(req, res, next);
+});
+
+app.post('/cart/clear', checkAuthenticated, (req, res, next) => {
+    return productController.clearCart(req, res, next);
+});
+
+// Checkout: persist order and redirect to invoice
+app.post('/checkout', checkAuthenticated, (req, res, next) => {
+    return productController.checkout(req, res, next);
+});
+
+// Orders & invoice
+app.get('/orders', checkAuthenticated, (req, res, next) => {
+    return productController.getOrders(req, res, next);
+});
+
+app.get('/invoice/:orderId', checkAuthenticated, (req, res, next) => {
+    return productController.getInvoice(req, res, next);
+});
+
 app.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.redirect('/');
+    // remove user from session but keep session for flash messages
+    if (req.session) {
+        req.session.user = null;
+        req.flash('success', 'Logged out successfully');
+        // ensure session is saved so flash is persisted then redirect
+        req.session.save(err => {
+            return res.redirect('/');
+        });
+    } else {
+        return res.redirect('/');
+    }
 });
 
 // Product detail route alias to match previous naming (delegate to controller)

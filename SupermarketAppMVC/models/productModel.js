@@ -74,5 +74,53 @@ module.exports = {
   deleteProduct: (id, cb) => {
     const sql = 'DELETE FROM products WHERE id = ?';
     return runQuery(sql, [id], cb);
+  },
+
+  // --- Orders support (simple implementation) ---
+  // addOrder(userId, total, cb) -> inserts an order and returns the inserted id via callback results.insertId
+  addOrder: (userId, total, cb) => {
+    const sql = 'INSERT INTO orders (userId, total, createdAt) VALUES (?, ?, NOW())';
+    return runQuery(sql, [userId, total], cb);
+  },
+
+  // addOrderItems(orderId, items, cb) -> items: [{ productId, productName, price, quantity }]
+  addOrderItems: (orderId, items, cb) => {
+    if (!Array.isArray(items) || items.length === 0) {
+      if (typeof cb === 'function') return cb(null, []);
+      return Promise.resolve([]);
+    }
+    // Build bulk insert
+    const values = [];
+    const placeholders = items.map(it => {
+      values.push(orderId, it.productId, it.productName, it.price, it.quantity);
+      return '(?, ?, ?, ?, ?)';
+    }).join(', ');
+    const sql = `INSERT INTO order_items (orderId, productId, productName, price, quantity) VALUES ${placeholders}`;
+    return runQuery(sql, values, cb);
+  },
+
+  // getOrdersByUser(userId, cb) -> returns flat rows; controller should group them
+  getOrdersByUser: (userId, cb) => {
+    const sql = `
+      SELECT o.id as orderId, o.userId, o.total, o.createdAt,
+             oi.productId, oi.productName, oi.price, oi.quantity
+      FROM orders o
+      LEFT JOIN order_items oi ON oi.orderId = o.id
+      WHERE o.userId = ?
+      ORDER BY o.createdAt DESC, o.id DESC
+    `;
+    return runQuery(sql, [userId], cb);
+  },
+
+  // getOrderById(orderId, cb) -> returns order header + items
+  getOrderById: (orderId, cb) => {
+    const sql = `
+      SELECT o.id as orderId, o.userId, o.total, o.createdAt,
+             oi.productId, oi.productName, oi.price, oi.quantity
+      FROM orders o
+      LEFT JOIN order_items oi ON oi.orderId = o.id
+      WHERE o.id = ?
+    `;
+    return runQuery(sql, [orderId], cb);
   }
 };

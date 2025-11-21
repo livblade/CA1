@@ -4,6 +4,46 @@
   <meta charset="UTF-8">
   <title>Your Cart</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* reuse/align styles with shopping page so buttons and qty controls match */
+    .buy-btn {
+      display: inline-block;
+      background: #1E90FF;
+      color: #fff;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: none;
+    }
+    .buy-btn.small { padding: 6px 10px; font-size: 0.95rem; border-radius: 8px; }
+
+    /* Shared rounded quantity control (applies to selects and number inputs) */
+    .qty-input, select.qty-input {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-color: #fff;
+      border: 2px solid #cfe6ff;
+      padding: 8px 10px;
+      border-radius: 10px; /* rounded edges */
+      min-width: 64px;
+      font-size: 1rem;
+      color: #111;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(30,144,255,0.05);
+      cursor: pointer;
+    }
+    .qty-input:focus, select.qty-input:focus {
+      border-color: #7ec0ff;
+      box-shadow: 0 0 0 6px rgba(30,144,255,0.12);
+    }
+
+    form.inline { display: inline-block; margin: 0 4px; }
+  </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -31,36 +71,77 @@
   <!-- Cart Content -->
   <div class="container">
     <h2 class="mt-4">Shopping Cart</h2>
-    <% if (cart.length === 0) { %>
+    <% if (!cart || cart.length === 0) { %>
       <p>Your cart is empty.</p>
     <% } else { %>
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th>Product</th>
+            <th>Item</th>
+            <th>Image</th>
             <th>Price</th>
             <th>Quantity</th>
-            <th>Total</th>
+            <th>Line total</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <% let total = 0; %>
-          <% for (let i = 0; i < cart.length; i++) { %>
+          <% cart.forEach(function(item) { %>
             <tr>
-                <td><%= cart[i].productName %></td>
-                <td><img src="/images/<%= cart[i].image %>" width="80" class="img-thumbnail"></td>
-                <td><%= cart[i].quantity %></td>
-                <td>$<%= (cart[i].price * cart[i].quantity).toFixed(2) %></td>
+              <td><%= item.productName %></td>
+              <td>
+                <% if (item.image) { %>
+                  <img src="/images/<%= item.image %>" alt="<%= item.productName %>" style="height:48px">
+                <% } %>
+              </td>
+              <td>$<%= (parseFloat(item.price) || 0).toFixed(2) %></td>
+              <td>
+                <!-- Update quantity form: select uses class="qty-input" and now ensures current quantity is shown/selected -->
+                <form method="post" action="/cart/update" class="inline">
+                  <input type="hidden" name="productId" value="<%= item.productId %>">
+                  <select name="quantity" class="qty-input" aria-label="Quantity">
+                    <% 
+                      const currentQty = parseInt(item.quantity,10) || 0;
+                      // show at least 1..10, but extend up to the current quantity (cap to avoid extremely long lists)
+                      const maxOption = Math.min(Math.max(10, currentQty), 50);
+                      for (let q = 1; q <= maxOption; q++) { 
+                    %>
+                      <option value="<%= q %>" <%= (currentQty === q) ? 'selected' : '' %>><%= q %></option>
+                    <% } %>
+                    <% if (currentQty > maxOption) { %>
+                      <!-- if quantity exceeds cap, append the exact value so it's selectable and shown -->
+                      <option value="<%= currentQty %>" selected><%= currentQty %></option>
+                    <% } %>
+                  </select>
+                  <button type="submit" class="buy-btn small">Update</button>
+                </form>
+              </td>
+              <td>$<%= ((parseFloat(item.price) || 0) * (parseInt(item.quantity,10) || 0)).toFixed(2) %></td>
+              <td>
+                <!-- Remove item form; posts to /cart/remove/:id -->
+                <form method="post" action="/cart/remove/<%= item.productId %>" class="inline">
+                  <button type="submit" class="buy-btn small">Remove</button>
+                </form>
+              </td>
             </tr>
-            <% total += cart[i].price * cart[i].quantity; %>
-          <% }; %>
+          <% }); %>
         </tbody>
       </table>
-      <h4>Total: $<%= total.toFixed(2) %></h4>
 
-      <div class="mt-4">
-        <a href="/shopping" class="btn btn-secondary">Back to Shopping</a>
-      </div>
+      <!-- Totals and actions -->
+      <section>
+        <p><strong>Total:</strong> $<%= (typeof total !== 'undefined' ? total.toFixed(2) : (cart.reduce((s,i)=> s + ((parseFloat(i.price)||0)*(parseInt(i.quantity,10)||0)),0)).toFixed(2)) %></p>
+
+        <!-- Clear cart -->
+        <form method="post" action="/cart/clear" class="inline" style="margin-right:8px">
+          <button type="submit" class="buy-btn" onclick="return confirm('Clear cart?')">Clear cart</button>
+        </form>
+
+        <!-- Checkout -->
+        <form method="post" action="/checkout" class="inline">
+          <button type="submit" class="buy-btn">Checkout</button>
+        </form>
+      </section>
     <% } %>
   </div>
 </body>
