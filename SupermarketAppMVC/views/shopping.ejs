@@ -46,6 +46,40 @@
 
     /* maintain small inline form spacing */
     form.add-cart-form { display:inline-block; margin:0 6px; }
+
+    /* Ensure table cells align vertically middle and group the input+button */
+    table tr td, table tr th {
+      vertical-align: middle;
+    }
+
+    /* Wrapper around quantity input + buy button to align them nicely */
+    .buy-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px; /* space between input and button */
+      min-height: 36px; /* ensures consistent row height with buttons */
+    }
+
+    /* Make sure inputs and buttons have consistent sizing */
+    .buy-controls input[type="number"],
+    .buy-controls input[type="text"] {
+      width: 72px;
+      padding: 6px 8px;
+      box-sizing: border-box;
+    }
+
+    .buy-controls .btn-buy {
+      padding: 6px 12px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Optional: ensure the Buy header text sits centered above controls */
+    th.buy-header {
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -69,7 +103,23 @@
     </nav>
 
   <div class="container">
-    <p>Welcome, <%= user.username %> (<%= user.role %>)</p>
+    <!-- Welcome / user area (keep this where it is in your template) -->
+    <div class="welcome-area">
+      <p>Welcome, <%= user.username %> (<%= user.role %>)</p>
+    </div>
+
+    <!-- moved flash messages here so they appear directly below the welcome header -->
+    <% if ((messages && messages.length) || (errors && errors.length)) { %>
+      <div class="flash-messages" style="margin:10px 0;">
+        <% (messages || []).forEach(function(m){ %>
+          <div class="alert alert-success" role="alert" style="margin-bottom:6px;"><%= m %></div>
+        <% }) %>
+        <% (errors || []).forEach(function(e){ %>
+          <div class="alert alert-danger" role="alert" style="margin-bottom:6px;"><%= e %></div>
+        <% }) %>
+      </div>
+    <% } %>
+
     <br>
     <div class="text-center"><h2>Products from Supermarket</h2></div>
     <br>
@@ -80,23 +130,34 @@
             <th width="100">Product Image</th>
             <th width="50">Quantity</th>
             <th width="50">Price</th>
-            <th width="50">Quantity</th>
-            <th width="50">Buy</th>
+            <th style="width:120px; text-align:center;">Quantity</th> <!-- input qty column -->
+            <th style="width:80px; text-align:center;">Buy</th> <!-- Buy header centered -->
           </tr>
       </thead>
       <tbody>
         <% products.forEach(function(product) { %>
           <tr>
             <td><a href="/product/<%= product.id %>"><%= product.productName %></a></td>
-            <td><img src="/images/<%= product.image %>" width="20%"></td>
+            <td>
+              <% if (product.image) { %>
+                <img src="/images/<%= product.image %>" alt="" style="height:32px;">
+              <% } else { %>
+                &nbsp;
+              <% } %>
+            </td>
             <td><%= product.quantity %></td>
             <td>$<%= (parseFloat(product.price) || 0).toFixed(2) %></td>
-            <td>
-              <form method="post" action="/add-to-cart/<%= product.id %>" class="add-cart-form">
-                <!-- numeric input kept but styled via .qty-input -->
-                <input type="number" name="quantity" class="qty-input" value="1" min="1" step="1" style="width:96px"
-                       data-stock="<%= product.quantity %>" aria-label="Quantity for <%= product.productName %>">
-                <button type="submit" class="buy-btn">Buy</button>
+
+            <!-- quantity input cell (centered vertically) -->
+            <td style="vertical-align:middle; text-align:center;">
+              <form action="/cart/add/<%= product.id %>" method="post" style="display:flex; align-items:center; justify-content:center; gap:6px;">
+                <input type="number" name="quantity" value="1" min="1" max="<%= product.quantity %>" class="form-control" style="width:70px; display:inline-block;">
+                <!-- Buy button cell is now within same form but visually in the last column via table cell order -->
+            </td>
+
+            <!-- buy button cell (aligned with header and vertically centered) -->
+            <td style="vertical-align:middle; text-align:center;">
+                <button type="submit" class="btn btn-primary" style="padding:6px 10px;">Buy</button>
               </form>
             </td>
           </tr>
@@ -104,19 +165,6 @@
       </tbody>
     </table>
   </div>
-
-  <!-- show flash error/success messages near top of shopping page -->
-  <% if (typeof messages !== 'undefined' || typeof errors !== 'undefined') { %>
-    <div class="flash-messages">
-      <% (messages || []).forEach(function(m){ %>
-        <div class="flash-success"><%= m %></div>
-      <% }) %>
-      <% (errors || []).forEach(function(e){ %>
-        <div class="flash-error"><%= e %></div>
-      <% }) %>
-      <% if (typeof locals !== 'undefined' && locals && locals.flash) { /* no-op for other setups */ } %>
-    </div>
-  <% } %>
 
   <!-- Add small client-side validator to improve UX (server-side still enforces limits) -->
   <script>

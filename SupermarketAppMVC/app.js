@@ -42,11 +42,10 @@ app.use(flash());
 
 // expose flash messages and current user to all views
 app.use((req, res, next) => {
-    res.locals.messages = {
-        success: req.flash('success'),
-        error: req.flash('error'),
-        info: req.flash('info')
-    };
+    // Provide flash messages as arrays expected by views
+    res.locals.messages = req.flash('success') || [];
+    res.locals.errors = req.flash('error') || [];
+    res.locals.info = req.flash('info') || [];
     res.locals.user = req.session ? req.session.user : null;
     next();
 });
