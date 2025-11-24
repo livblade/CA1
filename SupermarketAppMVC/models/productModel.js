@@ -80,6 +80,18 @@ module.exports = {
     return runQuery(sql, [id], cb);
   },
 
+  // --- NEW: Toggle product visibility (admin feature) ---
+  toggleProductVisibility: (id, visible, cb) => {
+    const sql = 'UPDATE products SET visible = ? WHERE id = ?';
+    return runQuery(sql, [visible ? 1 : 0, id], cb);
+  },
+
+  // --- NEW: Get products visible to customers (excludes hidden products) ---
+  getVisibleProducts: (cb) => {
+    const sql = 'SELECT * FROM products WHERE visible = 1';
+    return runQuery(sql, [], cb);
+  },
+
   // --- Orders support (simple implementation) ---
   // addOrder(userId, total, cb) -> inserts an order and returns the inserted id via callback results.insertId
   addOrder: (userId, total, cb) => {
@@ -129,23 +141,34 @@ module.exports = {
   },
 
   // --- NEW: search products by name or id (safe parameterized LIKE)
-  searchProducts: (searchTerm, cb) => {
+  // UPDATED: Admin sees all, users only see visible products
+  searchProducts: (searchTerm, isAdmin, cb) => {
     if (!searchTerm || String(searchTerm).trim() === '') {
-      // fallback to returning all products
-      const sqlAll = 'SELECT * FROM products';
+      // fallback to returning all products (filtered by visibility for users)
+      const sqlAll = isAdmin ? 'SELECT * FROM products' : 'SELECT * FROM products WHERE visible = 1';
       return runQuery(sqlAll, [], cb);
     }
     const term = `%${String(searchTerm).trim()}%`;
-    const sql = 'SELECT * FROM products WHERE productName LIKE ? OR CAST(id AS CHAR) LIKE ?';
+    let sql = 'SELECT * FROM products WHERE (productName LIKE ? OR CAST(id AS CHAR) LIKE ?)';
+    // Add visibility filter for non-admin users
+    if (!isAdmin) {
+      sql += ' AND visible = 1';
+    }
     return runQuery(sql, [term, term], cb);
   },
 
   // NEW: searchProductsWithFilters - supports search term, category filter, and price sorting
-  // params: { searchTerm, category, sort, minPrice, maxPrice }
+  // UPDATED: Added isAdmin parameter to filter by visibility
+  // params: { searchTerm, category, sort, minPrice, maxPrice, isAdmin }
   searchProductsWithFilters: (filters, cb) => {
-    const { searchTerm, category, sort, minPrice, maxPrice } = filters || {};
+    const { searchTerm, category, sort, minPrice, maxPrice, isAdmin } = filters || {};
     let sql = 'SELECT * FROM products WHERE 1=1';
     const params = [];
+
+    // Add visibility filter for non-admin users
+    if (!isAdmin) {
+      sql += ' AND visible = 1';
+    }
 
     // Apply search term (name or id)
     if (searchTerm && String(searchTerm).trim() !== '') {

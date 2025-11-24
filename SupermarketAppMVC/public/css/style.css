@@ -618,6 +618,175 @@ button:disabled, .btn:disabled {
   border-color: #3B82F6;
 }
 
+[data-theme="dark"] .theme-toggle:hover {
+  background: #1E40AF;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+}
+
+/* Dark mode low stock alert - maintain visibility */
+[data-theme="dark"] .low-stock-alert {
+  background: linear-gradient(135deg, #B91C1C 0%, #DC2626 100%);
+  border-left-color: #991B1B;
+  box-shadow: 0 4px 12px rgba(185, 28, 28, 0.5);
+}
+
+/* Dark mode bug fixes   */
+
+/* Cards and containers in dark mode */
+[data-theme="dark"] .search-filter-section,
+[data-theme="dark"] .table-container,
+[data-theme="dark"] .product-card,
+[data-theme="dark"] .form-card {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+/* Welcome box dark mode */
+[data-theme="dark"] .welcome-box {
+  background: var(--light-blue);
+  border-left-color: var(--primary-blue);
+  color: var(--text-dark);
+}
+
+/* Table dark mode */
+[data-theme="dark"] .table {
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] .table thead {
+  background-color: var(--table-header-bg);
+}
+
+[data-theme="dark"] .table tbody tr {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .table tbody tr:hover {
+  background-color: var(--hover-bg);
+}
+
+[data-theme="dark"] .table tbody td {
+  border-color: var(--border-color);
+}
+
+/* Form controls dark mode - light gray background for better visibility */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  background-color: #374151; /* Light gray instead of dark */
+  border-color: #4B5563;
+  color: #F9FAFB;
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+  background-color: #4B5563; /* Slightly lighter on focus */
+  border-color: #3B82F6;
+  color: #F9FAFB;
+}
+
+/* Dark mode quantity input - light gray background */
+[data-theme="dark"] input[type="number"].qty-input {
+  background-color: #374151;
+  border-color: #4B5563;
+  color: #F9FAFB;
+}
+
+[data-theme="dark"] input[type="number"].qty-input:focus {
+  background-color: #4B5563;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Dark mode placeholder text - lighter for visibility */
+[data-theme="dark"] .form-control::placeholder,
+[data-theme="dark"] .form-select::placeholder,
+[data-theme="dark"] input::placeholder {
+  color: #9CA3AF;
+  opacity: 1;
+}
+
+/* Dark mode links - ensure visibility */
+[data-theme="dark"] a {
+  color: var(--primary-blue);
+}
+
+[data-theme="dark"] a:hover {
+  color: var(--dark-blue);
+}
+
+/* Cart summary dark mode */
+[data-theme="dark"] .cart-summary {
+  background-color: var(--light-green);
+  border-color: var(--primary-green);
+}
+
+/* Dark mode cart total text color */
+[data-theme="dark"] .cart-summary h3 {
+  color: #F9FAFB !important;
+}
+
+/* Low stock row highlighting in inventory table */
+.low-stock-row {
+  background-color: #FEE2E2 !important;
+  border-left: 4px solid #DC2626;
+}
+
+[data-theme="dark"] .low-stock-row {
+  background-color: #7F1D1D !important;
+  border-left: 4px solid #EF4444;
+}
+
+.low-stock-badge {
+  background-color: #DC2626;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+  animation: pulse-badge 1.5s ease-in-out infinite;
+}
+
+/* Out of stock badge - gray styling */
+.out-of-stock-badge {
+  background-color: #6B7280;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+}
+
+[data-theme="dark"] .out-of-stock-badge {
+  background-color: #4B5563;
+}
+
+/* Secondary button styling (for disabled/unavailable actions) */
+.btn-secondary {
+  background-color: #6B7280;
+  border: none;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #4B5563;
+}
+
+[data-theme="dark"] .btn-secondary {
+  background-color: #4B5563;
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+  background-color: #374151;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
 /* Low stock alert - RED BANNER for both light and dark mode */
 .low-stock-alert {
   background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
@@ -636,43 +805,3 @@ button:disabled, .btn:disabled {
 .low-stock-alert-icon {
   font-size: 2rem;
 }
-
-.low-stock-alert h4 {
-  margin: 0;
-  font-weight: 700;
-  font-size: 1.25rem;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-}
-
-.low-stock-alert p {
-  margin: 0.5rem 0 0 0;
-  font-weight: 500;
-}
-
-.low-stock-alert ul {
-  margin: 0.5rem 0 0 1.5rem;
-  padding: 0;
-  list-style: none;
-}
-
-.low-stock-alert li {
-  padding: 0.25rem 0;
-  font-weight: 600;
-}
-
-.low-stock-alert li::before {
-  content: "⚠️ ";
-  margin-right: 0.5rem;
-}
-
-/* Alert animations */
-@keyframes pulse-alert {
-  0%, 100% {
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-  }
-  50% {
-    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
-  }
-}
-
-/* Dark mode bug fixes   */

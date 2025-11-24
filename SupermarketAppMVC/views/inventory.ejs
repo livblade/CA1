@@ -130,6 +130,7 @@
             <th>Stock</th>
             <th>Price</th>
             <th>Description</th>
+            <th>Visibility</th>
             <th>Edit</th>
             <th>Delete</th>
           </tr>
@@ -143,9 +144,23 @@
               <td><span class="category-badge"><%= products[i].category || 'N/A' %></span></td>
               <td>
                 <%= products[i].quantity %>
+                <!-- Show out of stock badge if quantity is 0 -->
+                <% if (parseInt(products[i].quantity, 10) === 0) { %>
+                  <span class="out-of-stock-badge">OUT OF STOCK</span>
+                <% } %>
               </td>
               <td><strong>$<%= products[i].price.toFixed(2) %></strong></td>
               <td><%= products[i].description ? (products[i].description.length > 40 ? products[i].description.substring(0,40) + '...' : products[i].description) : '' %></td>
+              <td>
+                <!-- Visibility toggle form -->
+                <form method="post" action="/toggleVisibility/<%= products[i].id %>" style="display:inline;">
+                  <input type="hidden" name="visible" value="<%= products[i].visible ? '0' : '1' %>">
+                  <button type="submit" class="btn btn-sm <%= products[i].visible ? 'btn-success' : 'btn-secondary' %>" 
+                          title="<%= products[i].visible ? 'Visible to users' : 'Hidden from users' %>">
+                    <%= products[i].visible ? '👁️ Visible' : '🚫 Hidden' %>
+                  </button>
+                </form>
+              </td>
               <td><a href="/updateProduct/<%= products[i].id %>" class="btn btn-primary btn-sm">Edit</a></td>
               <td><a href="/deleteProduct/<%= products[i].id %>" class="btn btn-danger btn-sm" onclick="return confirm('Delete this product?')">Delete</a></td>
             </tr>

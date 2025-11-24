@@ -11,14 +11,16 @@ module.exports = {
         const minPrice = (req.query && req.query.minPrice) ? req.query.minPrice : '';
         const maxPrice = (req.query && req.query.maxPrice) ? req.query.maxPrice : '';
 
+        // Determine if current user is admin
+        const isAdmin = req.session && req.session.user && req.session.user.role === 'admin';
+
         const handleResults = (err, results) => {
             if (err) {
                 return res.status(500).send(err);
             }
 
             // Choose view: admin inventory or shopping for regular users
-            const isAdminView = req.originalUrl && req.originalUrl.includes('/inventory') 
-                || (req.session && req.session.user && req.session.user.role === 'admin');
+            const isAdminView = req.originalUrl && req.originalUrl.includes('/inventory') || isAdmin;
 
             const viewName = isAdminView ? 'inventory' : 'shopping';
             // pass filter params back so views can keep filters populated
@@ -35,9 +37,21 @@ module.exports = {
 
         // if any filter/search is applied, use searchProductsWithFilters; otherwise fallback to getAllProducts
         if (q || category || sort || minPrice || maxPrice) {
-            return productModel.searchProductsWithFilters({ searchTerm: q, category, sort, minPrice, maxPrice }, handleResults);
+            return productModel.searchProductsWithFilters({ 
+                searchTerm: q, 
+                category, 
+                sort, 
+                minPrice, 
+                maxPrice, 
+                isAdmin 
+            }, handleResults);
         } else {
-            return productModel.getAllProducts(handleResults);
+            // Use appropriate method based on user role
+            if (isAdmin) {
+                return productModel.getAllProducts(handleResults);
+            } else {
+                return productModel.getVisibleProducts(handleResults);
+            }
         }
     },
 
@@ -334,6 +348,21 @@ module.exports = {
             });
             // render invoice view with order header/items
             return res.render('invoice', { order: header, user: req.session.user });
+        });
+    },
+
+    // --- NEW: Toggle product visibility (admin only) ---
+    toggleVisibility: (req, res) => {
+        const productId = req.params.id;
+        const visible = req.body.visible === '1' || req.body.visible === 'true' || req.body.visible === true;
+        
+        productModel.toggleProductVisibility(productId, visible, (err) => {
+            if (err) {
+                req.flash('error', 'Unable to update product visibility');
+                return res.redirect('/inventory');
+            }
+            req.flash('success', `Product ${visible ? 'shown' : 'hidden'} successfully`);
+            return res.redirect('/inventory');
         });
     }
 };
