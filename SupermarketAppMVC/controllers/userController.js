@@ -24,8 +24,8 @@ module.exports = {
 
     // Get user by ID
     getUserById: (req, res) => {
-        const usersId = req.params.id;
-        userModel.getUserById(usersId, (err, result) => {
+        const userId = req.params.id;
+        userModel.getUserById(userId, (err, result) => {
             if (err) {
                 return res.status(500).send(err);
             }
@@ -40,24 +40,49 @@ module.exports = {
         // prefer uploaded image if present
         const image = req.file ? req.file.filename : (req.body.image || null);
 
+        console.log('=== REGISTRATION ATTEMPT ===');
+        console.log('Username:', username);
+        console.log('Email:', email);
+        console.log('Address:', address);
+        console.log('Contact:', contact);
+        console.log('Role:', role);
+        console.log('Image:', image);
+
         // Validate (basic) - additional validation is performed earlier by middleware
         if (!username || !email || !password) {
-            req.flash('error', 'Missing fields');
+            console.log('VALIDATION FAILED: Missing required fields');
+            req.flash('error', 'Missing required fields');
             req.flash('formData', req.body);
             return res.redirect('/register');
         }
 
         // Hash password with SHA1 to match legacy DB scheme
         const passwordHash = crypto.createHash('sha1').update(password).digest('hex');
+        console.log('Password hashed successfully');
 
         userModel.addUser(username, email, passwordHash, address || '', contact || '', role || 'user', image, (err, results) => {
             if (err) {
                 // In case of duplicate email, inform the user
-                req.flash('error', 'Unable to register user');
+                console.error('=== REGISTRATION ERROR ===');
+                console.error('Error details:', err);
+                console.error('Error code:', err.code);
+                console.error('Error message:', err.message);
+                
+                if (err.code === 'ER_DUP_ENTRY') {
+                    req.flash('error', 'Email already registered. Please use a different email or login.');
+                } else {
+                    req.flash('error', `Unable to register user: ${err.message}`);
+                }
+                req.flash('formData', req.body);
                 return res.redirect('/register');
             }
-            // On success, redirect to login (or auto-login if desired)
-            req.flash('success', 'Registration successful. Please log in.');
+            
+            // On success, redirect to login with success message
+            console.log('=== REGISTRATION SUCCESS ===');
+            console.log('Results:', results);
+            console.log('Inserted user ID:', results.insertId);
+            
+            req.flash('success', 'Registration successful! Please log in with your new account.');
             return res.redirect('/login');
         });
     },
@@ -81,8 +106,8 @@ module.exports = {
 
     // Delete user
     deleteUser: (req, res) => {
-        const usersId = req.params.id;
-        userModel.deleteUser(usersId, (err) => {
+        const userId = req.params.id;
+        userModel.deleteUser(userId, (err) => {
             if (err) {
                 req.flash('error', 'Unable to delete user');
                 return res.redirect('/users');
@@ -100,18 +125,44 @@ module.exports = {
             return res.redirect('/login');
         }
 
+        console.log('Login attempt for email:', email);
+
         // Use model helper to fetch/authenticate the user
         userModel.getUserByEmailAndPassword(email, password, (err, user) => {
-            if (err) return next(err);
+            if (err) {
+                console.error('Login error:', err);
+                req.flash('error', 'An error occurred during login.');
+                return res.redirect('/login');
+            }
             if (!user) {
+                console.log('No user found or password mismatch');
                 req.flash('error', 'Invalid email or password.');
                 return res.redirect('/login');
             }
-            // store user object in session (omit password)
-            delete user.password;
-            req.session.user = user;
+            
+            console.log('User found:', user);
+            
+            // Store user object in session (omit password for security)
+            const sessionUser = {
+                userId: user.id,  // Changed from usersId to id
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                address: user.address,
+                contact: user.contact
+            };
+            
+            req.session.user = sessionUser;
+            console.log('Session user set:', sessionUser);
+            
             req.flash('success', 'Login successful!');
-            return user.role === 'user' ? res.redirect('/shopping') : res.redirect('/inventory');
+            
+            // Redirect based on role
+            if (sessionUser.role === 'admin') {
+                return res.redirect('/inventory');
+            } else {
+                return res.redirect('/shopping');
+            }
         });
     },
 

@@ -259,7 +259,7 @@ module.exports = {
             };
         });
 
-        const userId = req.session.user && (req.session.user.usersId || req.session.user.id || req.session.user.userId);
+        const userId = req.session.user && (req.session.user.userId || req.session.user.id);  // Changed
         if (!userId) {
             req.flash('error', 'User not recognized');
             return res.redirect('/login');
@@ -291,7 +291,7 @@ module.exports = {
 
     // Get orders for logged-in user (GET /orders)
     getOrders: (req, res, next) => {
-        const userId = req.session.user && (req.session.user.usersId || req.session.user.id || req.session.user.userId);
+        const userId = req.session.user && (req.session.user.userId || req.session.user.id);  // Changed
         if (!userId) return res.redirect('/login');
 
         productModel.getOrdersByUser(userId, (err, rows) => {
@@ -354,15 +354,11 @@ module.exports = {
     // --- NEW: Toggle product visibility (admin only) ---
     toggleVisibility: (req, res) => {
         const productId = req.params.id;
-        // Parse visible value - handle string '1'/'0', boolean true/false, or string 'true'/'false'
         const visibleValue = req.body.visible;
         const visible = visibleValue === '1' || visibleValue === 1 || visibleValue === 'true' || visibleValue === true;
         
-        console.log(`Toggling product ${productId} visibility to: ${visible} (received: ${visibleValue})`); // Debug log
-        
         productModel.toggleProductVisibility(productId, visible, (err) => {
             if (err) {
-                console.error('Error toggling visibility:', err); // Debug log
                 req.flash('error', 'Unable to update product visibility');
                 return res.redirect('/inventory');
             }

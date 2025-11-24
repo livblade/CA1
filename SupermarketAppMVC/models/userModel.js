@@ -33,29 +33,42 @@ module.exports = {
     },
 
     // Return one user by id
-    getUserById: (usersId, callback) => {
-        const sql = 'SELECT * FROM users WHERE usersId = ?';
-        return runQuery(sql, [usersId], callback);
+    getUserById: (id, callback) => {
+        const sql = 'SELECT * FROM users WHERE id = ?';
+        return runQuery(sql, [id], callback);
     },
 
     // Add a user. Password expected to be already hashed (SHA1).
     addUser: (username, email, passwordHash, address, contact, role, image, callback) => {
-        const sql = 'INSERT INTO users (username, email, password, address, contact, role, image) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        return runQuery(sql, [username, email, passwordHash, address, contact, role, image], callback);
+        const sql = 'INSERT INTO users (username, email, password, address, contact, role) VALUES (?, ?, ?, ?, ?, ?)';
+        const params = [username, email, passwordHash, address, contact, role];
+        
+        console.log('=== DATABASE INSERT ATTEMPT ===');
+        console.log('SQL:', sql);
+        console.log('Params:', params);
+        
+        return runQuery(sql, params, (err, results) => {
+            if (err) {
+                console.error('Database insert error:', err);
+            } else {
+                console.log('Database insert successful:', results);
+            }
+            if (typeof callback === 'function') callback(err, results);
+        });
     },
 
     // Update user (password not updated here unless caller passes a different hash)
-    updateUser: (usersId, username, email, passwordHash, address, contact, role, image, callback) => {
+    updateUser: (id, username, email, passwordHash, address, contact, role, image, callback) => {
         const sql = `UPDATE users SET 
             username = ?, email = ?, password = COALESCE(NULLIF(?, ''), password),
-            address = ?, contact = ?, role = ?, image = ?
-            WHERE usersId = ?`;
-        return runQuery(sql, [username, email, passwordHash || null, address, contact, role, image, usersId], callback);
+            address = ?, contact = ?, role = ?
+            WHERE id = ?`;
+        return runQuery(sql, [username, email, passwordHash || null, address, contact, role, id], callback);
     },
 
-    deleteUser: (usersId, callback) => {
-        const sql = 'DELETE FROM users WHERE usersId = ?';
-        return runQuery(sql, [usersId], callback);
+    deleteUser: (id, callback) => {
+        const sql = 'DELETE FROM users WHERE id = ?';
+        return runQuery(sql, [id], callback);
     },
 
     // Authenticate by email + password (accepts raw password or already-hashed SHA1).
@@ -63,33 +76,45 @@ module.exports = {
     getUserByEmailAndPassword: (email, password, callback) => {
         try {
             let pwdHash = password || '';
+            // Hash the password if it's not already a 40-character hex string
             if (!/^[a-f0-9]{40}$/i.test(pwdHash)) {
                 pwdHash = crypto.createHash('sha1').update(password || '').digest('hex');
             }
+            
+            console.log('Searching for user with email:', email);
+            console.log('Password hash:', pwdHash);
+            
             const sql = 'SELECT * FROM users WHERE email = ? AND password = ? LIMIT 1';
             return runQuery(sql, [email, pwdHash], (err, results) => {
                 if (err) {
+                    console.error('Database error during login:', err);
                     if (typeof callback === 'function') return callback(err);
                     throw err;
                 }
-                const user = Array.isArray(results) ? results[0] : results;
+                
+                console.log('Query results:', results);
+                
+                // Return the first user found, or null if none
+                const user = Array.isArray(results) && results.length > 0 ? results[0] : null;
+                
                 if (typeof callback === 'function') return callback(null, user);
                 return user;
             });
         } catch (err) {
+            console.error('Error in getUserByEmailAndPassword:', err);
             if (typeof callback === 'function') return callback(err);
             return Promise.reject(err);
         }
     },
 
-    // NEW: searchUsers - search by username, email or usersId (as string)
+    // NEW: searchUsers - search by username, email or id (as string)
     searchUsers: (searchTerm, callback) => {
       if (!searchTerm || String(searchTerm).trim() === '') {
         const sqlAll = 'SELECT * FROM users';
         return runQuery(sqlAll, [], callback);
       }
       const term = `%${String(searchTerm).trim()}%`;
-      const sql = 'SELECT * FROM users WHERE username LIKE ? OR email LIKE ? OR CAST(usersId AS CHAR) LIKE ?';
+      const sql = 'SELECT * FROM users WHERE username LIKE ? OR email LIKE ? OR CAST(id AS CHAR) LIKE ?';
       return runQuery(sql, [term, term, term], callback);
     }
 };

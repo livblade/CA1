@@ -35,14 +35,23 @@
         <div style="background: white; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
           <h2 class="text-center mb-4" style="color: #1e40af; font-weight: 700;">Login</h2>
           
+          <!-- Display error messages -->
           <% if (errors && errors.length > 0) { %>
             <% errors.forEach(function(error) { %>
-              <div class="alert alert-danger"><%= error %></div>
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <%= error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
             <% }); %>
           <% } %>
+          
+          <!-- Display success messages (like after registration) -->
           <% if (messages && messages.length > 0) { %>
             <% messages.forEach(function(message) { %>
-              <div class="alert alert-success"><%= message %></div>
+              <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <%= message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
             <% }); %>
           <% } %>
 

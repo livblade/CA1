@@ -40,7 +40,10 @@
           <!-- Display error messages if validation fails -->
           <% if (messages && messages.length > 0) { %>
             <% messages.forEach(function(message) { %>
-              <div class="alert alert-danger"><%= message %></div>
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <%= message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
             <% }); %>
           <% } %>
 
