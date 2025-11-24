@@ -354,10 +354,15 @@ module.exports = {
     // --- NEW: Toggle product visibility (admin only) ---
     toggleVisibility: (req, res) => {
         const productId = req.params.id;
-        const visible = req.body.visible === '1' || req.body.visible === 'true' || req.body.visible === true;
+        // Parse visible value - handle string '1'/'0', boolean true/false, or string 'true'/'false'
+        const visibleValue = req.body.visible;
+        const visible = visibleValue === '1' || visibleValue === 1 || visibleValue === 'true' || visibleValue === true;
+        
+        console.log(`Toggling product ${productId} visibility to: ${visible} (received: ${visibleValue})`); // Debug log
         
         productModel.toggleProductVisibility(productId, visible, (err) => {
             if (err) {
+                console.error('Error toggling visibility:', err); // Debug log
                 req.flash('error', 'Unable to update product visibility');
                 return res.redirect('/inventory');
             }

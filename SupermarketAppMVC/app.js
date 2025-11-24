@@ -133,6 +133,11 @@ app.get('/products/update/:id', checkAuthenticated, checkAdmin, (req, res, next)
     return productController.getProductById(req, res, next);
 });
 
+// NEW: Toggle product visibility (admin only) - MUST be before generic product routes
+app.post('/toggleVisibility/:id', checkAuthenticated, checkAdmin, (req, res, next) => {
+    return productController.toggleVisibility(req, res, next);
+});
+
 // Users routes (use controller)
 app.get('/users', checkAuthenticated, checkAdmin, (req, res, next) => {
     return userController.getAllUsers(req, res, next);
@@ -293,10 +298,7 @@ app.get('/deleteProduct/:id', checkAuthenticated, checkAdmin, (req, res, next) =
     return productController.deleteProduct(req, res, next);
 });
 
-// NEW: Toggle product visibility (admin only)
-app.post('/toggleVisibility/:id', checkAuthenticated, checkAdmin, (req, res, next) => {
-    return productController.toggleVisibility(req, res, next);
-});
-
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

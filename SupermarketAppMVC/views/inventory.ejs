@@ -152,11 +152,13 @@
               <td><strong>$<%= products[i].price.toFixed(2) %></strong></td>
               <td><%= products[i].description ? (products[i].description.length > 40 ? products[i].description.substring(0,40) + '...' : products[i].description) : '' %></td>
               <td>
-                <!-- Visibility toggle form -->
-                <form method="post" action="/toggleVisibility/<%= products[i].id %>" style="display:inline;">
+                <!-- Visibility toggle form with proper POST method -->
+                <form method="POST" action="/toggleVisibility/<%= products[i].id %>" style="display:inline;">
+                  <!-- Send opposite of current value to toggle -->
                   <input type="hidden" name="visible" value="<%= products[i].visible ? '0' : '1' %>">
                   <button type="submit" class="btn btn-sm <%= products[i].visible ? 'btn-success' : 'btn-secondary' %>" 
-                          title="<%= products[i].visible ? 'Visible to users' : 'Hidden from users' %>">
+                          title="Click to <%= products[i].visible ? 'hide' : 'show' %> this product from users"
+                          onclick="this.disabled=true; this.innerHTML='Updating...'; this.form.submit();">
                     <%= products[i].visible ? '👁️ Visible' : '🚫 Hidden' %>
                   </button>
                 </form>
