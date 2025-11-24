@@ -3,7 +3,10 @@ const productModel = require('../models/productModel');
 module.exports = {
     // Get all products (renders inventory for admins, shopping for users)
     getAllProducts: (req, res) => {
-        productModel.getAllProducts((err, results) => {
+        // read optional search query from querystring (e.g. /products?q=apple)
+        const q = (req.query && req.query.q) ? String(req.query.q).trim() : '';
+
+        const handleResults = (err, results) => {
             if (err) {
                 return res.status(500).send(err);
             }
@@ -13,8 +16,17 @@ module.exports = {
                 || (req.session && req.session.user && req.session.user.role === 'admin');
 
             const viewName = isAdminView ? 'inventory' : 'shopping';
-            return res.render(viewName, { products: results, user: req.session ? req.session.user : null });
-        });
+            // pass searchQuery back so views can keep the search input populated
+            return res.render(viewName, { products: results, user: req.session ? req.session.user : null, searchQuery: q });
+        };
+
+        if (q) {
+            // perform a search via model
+            return productModel.searchProducts(q, handleResults);
+        } else {
+            // return all products
+            return productModel.getAllProducts(handleResults);
+        }
     },
 
     // Get product by ID

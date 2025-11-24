@@ -120,6 +120,20 @@
       </div>
     <% } %>
 
+    <!-- NEW: Search bar for shoppers -->
+    <div class="row my-3">
+      <div class="col-12">
+        <form class="d-flex" method="get" action="/shopping" role="search">
+          <input class="form-control me-2" type="search" name="q" placeholder="Search products..." aria-label="Search"
+                 value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+          <button class="btn btn-outline-primary" type="submit">Search</button>
+          <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+            <a href="/shopping" class="btn btn-link ms-2">Clear</a>
+          <% } %>
+        </form>
+      </div>
+    </div>
+
     <br>
     <div class="text-center"><h2>Products from Supermarket</h2></div>
     <br>

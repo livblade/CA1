@@ -4,13 +4,22 @@ const crypto = require('crypto');
 module.exports = {
     // Get all users (admin view)
     getAllUsers: (req, res) => {
-        userModel.getAllUsers((err, results) => {
+        // optional search query from querystring
+        const q = (req.query && req.query.q) ? String(req.query.q).trim() : '';
+
+        const cb = (err, results) => {
             if (err) {
                 return res.status(500).send(err);
             }
             // render users listing (ensure a view exists at users/index.ejs)
-            res.render('users/index', { users: results, user: req.session ? req.session.user : null });
-        });
+            res.render('users/index', { users: results, user: req.session ? req.session.user : null, searchQuery: q });
+        };
+
+        if (q) {
+            return userModel.searchUsers(q, cb);
+        } else {
+            return userModel.getAllUsers(cb);
+        }
     },
 
     // Get user by ID

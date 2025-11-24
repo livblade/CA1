@@ -80,5 +80,16 @@ module.exports = {
             if (typeof callback === 'function') return callback(err);
             return Promise.reject(err);
         }
+    },
+
+    // NEW: searchUsers - search by username, email or usersId (as string)
+    searchUsers: (searchTerm, callback) => {
+      if (!searchTerm || String(searchTerm).trim() === '') {
+        const sqlAll = 'SELECT * FROM users';
+        return runQuery(sqlAll, [], callback);
+      }
+      const term = `%${String(searchTerm).trim()}%`;
+      const sql = 'SELECT * FROM users WHERE username LIKE ? OR email LIKE ? OR CAST(usersId AS CHAR) LIKE ?';
+      return runQuery(sql, [term, term, term], callback);
     }
 };

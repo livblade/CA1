@@ -122,5 +122,17 @@ module.exports = {
       WHERE o.id = ?
     `;
     return runQuery(sql, [orderId], cb);
+  },
+
+  // --- NEW: search products by name or id (safe parameterized LIKE)
+  searchProducts: (searchTerm, cb) => {
+    if (!searchTerm || String(searchTerm).trim() === '') {
+      // fallback to returning all products
+      const sqlAll = 'SELECT * FROM products';
+      return runQuery(sqlAll, [], cb);
+    }
+    const term = `%${String(searchTerm).trim()}%`;
+    const sql = 'SELECT * FROM products WHERE productName LIKE ? OR CAST(id AS CHAR) LIKE ?';
+    return runQuery(sql, [term, term], cb);
   }
 };
