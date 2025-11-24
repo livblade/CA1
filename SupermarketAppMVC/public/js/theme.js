@@ -50,9 +50,9 @@
     if (!toggleBtn) return;
 
     if (theme === 'dark') {
-      toggleBtn.innerHTML = '☀️ Light Mode';
+      toggleBtn.innerHTML = 'Light Mode';
     } else {
-      toggleBtn.innerHTML = '🌙 Dark Mode';
+      toggleBtn.innerHTML = 'Dark Mode';
     }
   }
 })();

@@ -499,16 +499,35 @@ button:disabled, .btn:disabled {
   color: var(--text-dark);
 }
 
-/* Dark Mode Navbar - darker blue */
+/* Dark Mode Navbar - darker blue with white text */
 [data-theme="dark"] .navbar-custom {
   background-color: #1E3A8A;
   box-shadow: 0 2px 8px rgba(30, 58, 138, 0.5);
 }
 
-/* Dark mode page header - darker green */
+/* Ensure navbar links remain white in dark mode */
+[data-theme="dark"] .navbar-custom .nav-link {
+  color: #F9FAFB !important;
+}
+
+[data-theme="dark"] .navbar-custom .nav-link:hover {
+  background-color: #1E40AF;
+  color: #F9FAFB !important;
+}
+
+/* Ensure navbar brand text is white in dark mode */
+[data-theme="dark"] .navbar-brand {
+  color: #F9FAFB !important;
+}
+
+/* Dark mode page header - darker green with white text */
 [data-theme="dark"] .page-header {
   background-color: #166534;
   box-shadow: 0 4px 6px rgba(22, 101, 52, 0.4);
+}
+
+[data-theme="dark"] .page-header h2 {
+  color: #F9FAFB;
 }
 
 /* Dark mode category badge - darker green */
@@ -543,6 +562,7 @@ button:disabled, .btn:disabled {
 [data-theme="dark"] .btn-primary:hover {
   background-color: #2563EB;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+  color: #F9FAFB;
 }
 
 [data-theme="dark"] .btn-success {
@@ -553,6 +573,19 @@ button:disabled, .btn:disabled {
 [data-theme="dark"] .btn-success:hover {
   background-color: #16A34A;
   box-shadow: 0 4px 12px rgba(34, 197, 94, 0.5);
+  color: #F9FAFB;
+}
+
+/* Dark mode delete button - white text */
+[data-theme="dark"] .btn-danger {
+  background-color: #DC2626;
+  color: #F9FAFB;
+}
+
+[data-theme="dark"] .btn-danger:hover {
+  background-color: #B91C1C;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5);
+  color: #F9FAFB;
 }
 
 [data-theme="dark"] .btn-outline-primary {
@@ -636,35 +669,43 @@ button:disabled, .btn:disabled {
   border-color: var(--border-color);
 }
 
-/* Form controls dark mode */
+/* Form controls dark mode - light gray background for better visibility */
 [data-theme="dark"] .form-control,
 [data-theme="dark"] .form-select {
-  background-color: var(--gray-bg);
-  border-color: var(--border-color);
-  color: var(--text-dark);
+  background-color: #374151; /* Light gray instead of dark */
+  border-color: #4B5563;
+  color: #F9FAFB;
 }
 
 [data-theme="dark"] .form-control:focus,
 [data-theme="dark"] .form-select:focus {
-  background-color: var(--card-bg);
-  border-color: var(--primary-blue);
-  color: var(--text-dark);
+  background-color: #4B5563; /* Slightly lighter on focus */
+  border-color: #3B82F6;
+  color: #F9FAFB;
 }
 
-/* Alert messages dark mode */
-[data-theme="dark"] .alert-success {
-  background-color: var(--light-green);
-  color: var(--text-dark);
-  border-left-color: var(--primary-green);
+/* Dark mode quantity input - light gray background */
+[data-theme="dark"] input[type="number"].qty-input {
+  background-color: #374151;
+  border-color: #4B5563;
+  color: #F9FAFB;
 }
 
-[data-theme="dark"] .alert-danger {
-  background-color: #7F1D1D;
-  color: var(--text-dark);
-  border-left-color: #DC2626;
+[data-theme="dark"] input[type="number"].qty-input:focus {
+  background-color: #4B5563;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
-/* Links dark mode */
+/* Dark mode placeholder text - lighter for visibility */
+[data-theme="dark"] .form-control::placeholder,
+[data-theme="dark"] .form-select::placeholder,
+[data-theme="dark"] input::placeholder {
+  color: #9CA3AF;
+  opacity: 1;
+}
+
+/* Dark mode links - ensure visibility */
 [data-theme="dark"] a {
   color: var(--primary-blue);
 }
