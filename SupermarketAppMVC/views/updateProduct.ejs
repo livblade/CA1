@@ -54,6 +54,24 @@
         </div>
 
         <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea class="form-control" id="description" name="description" rows="3"><%= product.description || '' %></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="category" class="form-label">Category</label>
+          <select class="form-select" id="category" name="category" required>
+            <option value="">Select category...</option>
+            <option value="Fruit" <%= (product.category === 'Fruit') ? 'selected' : '' %>>Fruit</option>
+            <option value="Vegetable" <%= (product.category === 'Vegetable') ? 'selected' : '' %>>Vegetable</option>
+            <option value="Meat" <%= (product.category === 'Meat') ? 'selected' : '' %>>Meat</option>
+            <option value="Dairy" <%= (product.category === 'Dairy') ? 'selected' : '' %>>Dairy</option>
+            <option value="Bakery" <%= (product.category === 'Bakery') ? 'selected' : '' %>>Bakery</option>
+            <option value="Other" <%= (product.category === 'Other') ? 'selected' : '' %>>Other</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
           <label class="form-label">Current Image</label>
           <input type="text" class="form-control" name="currentImage" value="<%= product.image %>" readonly>
           <img src="/images/<%= product.image %>" class="img-thumbnail mt-2" style="width: 150px;">

@@ -134,6 +134,59 @@
       </div>
     </div>
 
+    <!-- NEW: Filter and Sort Controls -->
+    <div class="row my-3">
+      <div class="col-12">
+        <form method="get" action="/shopping" class="row g-3 align-items-end">
+          <!-- preserve search query if present -->
+          <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+            <input type="hidden" name="q" value="<%= searchQuery %>">
+          <% } %>
+
+          <!-- Category filter -->
+          <div class="col-md-3">
+            <label for="category" class="form-label">Category</label>
+            <select name="category" id="category" class="form-select">
+              <option value="">All</option>
+              <option value="Fruit" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Fruit') ? 'selected' : '' %>>Fruit</option>
+              <option value="Vegetable" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Vegetable') ? 'selected' : '' %>>Vegetable</option>
+              <option value="Meat" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Meat') ? 'selected' : '' %>>Meat</option>
+              <option value="Dairy" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Dairy') ? 'selected' : '' %>>Dairy</option>
+              <option value="Bakery" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Bakery') ? 'selected' : '' %>>Bakery</option>
+              <option value="Other" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Other') ? 'selected' : '' %>>Other</option>
+            </select>
+          </div>
+
+          <!-- Price range -->
+          <div class="col-md-2">
+            <label for="minPrice" class="form-label">Min Price</label>
+            <input type="number" name="minPrice" id="minPrice" class="form-control" placeholder="0.00" step="0.01" min="0"
+                   value="<%= typeof minPrice !== 'undefined' ? minPrice : '' %>">
+          </div>
+          <div class="col-md-2">
+            <label for="maxPrice" class="form-label">Max Price</label>
+            <input type="number" name="maxPrice" id="maxPrice" class="form-control" placeholder="99.99" step="0.01" min="0"
+                   value="<%= typeof maxPrice !== 'undefined' ? maxPrice : '' %>">
+          </div>
+
+          <!-- Sort by price -->
+          <div class="col-md-3">
+            <label for="sort" class="form-label">Sort by Price</label>
+            <select name="sort" id="sort" class="form-select">
+              <option value="">Default</option>
+              <option value="price_asc" <%= (typeof selectedSort !== 'undefined' && selectedSort === 'price_asc') ? 'selected' : '' %>>Price: Low to High</option>
+              <option value="price_desc" <%= (typeof selectedSort !== 'undefined' && selectedSort === 'price_desc') ? 'selected' : '' %>>Price: High to Low</option>
+            </select>
+          </div>
+
+          <!-- Apply filters button -->
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <br>
     <div class="text-center"><h2>Products from Supermarket</h2></div>
     <br>
@@ -141,11 +194,13 @@
       <thead>
           <tr>
             <th width="100">Product Name</th>
-            <th width="100">Product Image</th>
-            <th width="50">Quantity</th>
+            <th width="100">Image</th>
+            <th width="80">Category</th>
+            <th width="50">Stock</th>
             <th width="50">Price</th>
-            <th style="width:120px; text-align:center;">Quantity</th> <!-- input qty column -->
-            <th style="width:80px; text-align:center;">Buy</th> <!-- Buy header centered -->
+            <th width="150">Description</th>
+            <th style="width:120px;">Quantity</th>
+            <th style="width:80px;">Buy</th>
           </tr>
       </thead>
       <tbody>
@@ -159,17 +214,18 @@
                 &nbsp;
               <% } %>
             </td>
+            <td><%= product.category || 'N/A' %></td>
             <td><%= product.quantity %></td>
             <td>$<%= (parseFloat(product.price) || 0).toFixed(2) %></td>
+            <td><%= product.description ? (product.description.length > 50 ? product.description.substring(0,50) + '...' : product.description) : '' %></td>
 
-            <!-- quantity input cell (centered vertically) -->
+            <!-- quantity input cell -->
             <td style="vertical-align:middle; text-align:center;">
               <form action="/cart/add/<%= product.id %>" method="post" style="display:flex; align-items:center; justify-content:center; gap:6px;">
                 <input type="number" name="quantity" value="1" min="1" max="<%= product.quantity %>" class="form-control" style="width:70px; display:inline-block;">
-                <!-- Buy button cell is now within same form but visually in the last column via table cell order -->
             </td>
 
-            <!-- buy button cell (aligned with header and vertically centered) -->
+            <!-- buy button cell -->
             <td style="vertical-align:middle; text-align:center;">
                 <button type="submit" class="btn btn-primary" style="padding:6px 10px;">Buy</button>
               </form>
