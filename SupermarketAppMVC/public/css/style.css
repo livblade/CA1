@@ -462,160 +462,142 @@ button:disabled, .btn:disabled {
 
 /* Dark Mode */
 [data-theme="dark"] {
-  /* Dark mode color palette */
-  --primary-blue: #60A5FA;
-  --dark-blue: #3B82F6;
+  /* Darker blue tones suitable for dark mode - less vibrant, easier on eyes */
+  --primary-blue: #3B82F6;
+  --dark-blue: #2563EB;
   --light-blue: #1E3A8A;
   --pale-blue: #1E293B;
   
-  --primary-green: #10B981;
-  --dark-green: #059669;
-  --light-green: #065F46;
-  --pale-green: #064E3B;
+  /* Darker green tones for dark mode - muted but visible */
+  --primary-green: #22C55E;
+  --dark-green: #16A34A;
+  --light-green: #166534;
+  --pale-green: #14532D;
   
-  --accent-orange: #FB923C;
-  --accent-yellow: #FCD34D;
+  /* Muted accent colors for dark mode */
+  --accent-orange: #F97316;
+  --accent-yellow: #EAB308;
   
-  --text-dark: #F3F4F6;
+  /* Dark mode text colors - light text on dark background */
+  --text-dark: #F9FAFB;
   --text-light: #D1D5DB;
-  --white: #111827;
-  --gray-bg: #1F2937;
+  
+  /* Dark backgrounds */
+  --white: #1F2937; /* Card/component backgrounds */
+  --gray-bg: #111827; /* Main page background - very dark gray */
   --border-color: #374151;
   
   /* Dark mode specific colors */
-  --card-bg: #1F2937;
-  --table-header-bg: #1E3A8A;
-  --hover-bg: #374151;
+  --card-bg: #1F2937; /* Slightly lighter than page background */
+  --table-header-bg: #1E3A8A; /* Dark blue for table headers */
+  --hover-bg: #374151; /* Hover state background */
 }
 
-/* Light mode explicit variables (default) */
-:root {
-  /* Vibrant blue tones - energetic and trustworthy */
-  --primary-blue: #2196F3;
-  --dark-blue: #1976D2;
-  --light-blue: #BBDEFB;
-  --pale-blue: #E3F2FD;
-  
-  /* Vibrant green tones - fresh and lively */
-  --primary-green: #4CAF50;
-  --dark-green: #388E3C;
-  --light-green: #C8E6C9;
-  --pale-green: #E8F5E9;
-  
-  /* Accent colors */
-  --accent-orange: #FF9800;
-  --accent-yellow: #FFC107;
-  
-  /* Neutral colors for text and backgrounds */
-  --text-dark: #212121;
-  --text-light: #757575;
-  --white: #ffffff;
-  --gray-bg: #FAFAFA;
-  --border-color: #E0E0E0;
-  
-  /* Card and table header backgrounds */
-  --card-bg: #ffffff;
-  --table-header-bg: var(--primary-blue);
-  --hover-bg: var(--pale-blue);
-}
-
-/* Dark mode body styling */
+/* Dark mode body styling - ensure dark gray background */
 [data-theme="dark"] body {
   background-color: var(--gray-bg);
   color: var(--text-dark);
 }
 
-/* Dark Mode button */
-.theme-toggle {
-  background: var(--primary-blue);
-  border: 2px solid var(--dark-blue);
-  border-radius: 2rem;
-  padding: 0.5rem 1rem;
-  color: var(--white);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+/* Dark Mode Navbar - darker blue */
+[data-theme="dark"] .navbar-custom {
+  background-color: #1E3A8A;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.5);
 }
 
-.theme-toggle:hover {
-  background: var(--dark-blue);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+/* Dark mode page header - darker green */
+[data-theme="dark"] .page-header {
+  background-color: #166534;
+  box-shadow: 0 4px 6px rgba(22, 101, 52, 0.4);
 }
 
+/* Dark mode category badge - darker green */
+[data-theme="dark"] .category-badge {
+  background-color: var(--primary-green);
+  box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
+}
+
+/* Dark mode product images - adjust border for dark theme */
+[data-theme="dark"] .product-img {
+  border-color: var(--border-color);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+/* Dark mode cart summary - darker green background */
+[data-theme="dark"] .cart-summary {
+  background-color: var(--light-green);
+  border-color: var(--primary-green);
+  box-shadow: 0 3px 8px rgba(22, 101, 52, 0.4);
+}
+
+[data-theme="dark"] .cart-total {
+  color: #22C55E;
+}
+
+/* Dark mode buttons - ensure proper contrast */
+[data-theme="dark"] .btn-primary {
+  background-color: #3B82F6;
+  color: #F9FAFB;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  background-color: #2563EB;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+}
+
+[data-theme="dark"] .btn-success {
+  background-color: #22C55E;
+  color: #F9FAFB;
+}
+
+[data-theme="dark"] .btn-success:hover {
+  background-color: #16A34A;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.5);
+}
+
+[data-theme="dark"] .btn-outline-primary {
+  border-color: #3B82F6;
+  color: #3B82F6;
+}
+
+[data-theme="dark"] .btn-outline-primary:hover {
+  background-color: #3B82F6;
+  color: #F9FAFB;
+}
+
+/* Dark mode input focus - darker blue ring */
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+  background-color: var(--card-bg);
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] input[type="number"].qty-input:focus {
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Dark mode theme toggle button styling */
 [data-theme="dark"] .theme-toggle {
-  background: var(--dark-blue);
-  border-color: var(--primary-blue);
+  background: #1E3A8A;
+  border-color: #3B82F6;
 }
 
-/* Low stock alert */
-.low-stock-alert {
-  background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
-  color: white;
-  padding: 1rem 1.5rem;
-  border-radius: 0.75rem;
-  margin-bottom: 1.5rem;
-  border-left: 5px solid #B91C1C;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-  animation: pulse-alert 2s ease-in-out infinite;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+[data-theme="dark"] .theme-toggle:hover {
+  background: #1E40AF;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
 }
 
-.low-stock-alert-icon {
-  font-size: 2rem;
-  animation: shake 0.5s ease-in-out infinite;
+/* Dark mode low stock alert - maintain visibility */
+[data-theme="dark"] .low-stock-alert {
+  background: linear-gradient(135deg, #B91C1C 0%, #DC2626 100%);
+  border-left-color: #991B1B;
+  box-shadow: 0 4px 12px rgba(185, 28, 28, 0.5);
 }
 
-.low-stock-alert h4 {
-  margin: 0;
-  font-weight: 700;
-  font-size: 1.25rem;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-}
-
-.low-stock-alert p {
-  margin: 0.5rem 0 0 0;
-  font-weight: 500;
-}
-
-.low-stock-alert ul {
-  margin: 0.5rem 0 0 1.5rem;
-  padding: 0;
-  list-style: none;
-}
-
-.low-stock-alert li {
-  padding: 0.25rem 0;
-  font-weight: 600;
-}
-
-.low-stock-alert li::before {
-  content: "⚠️ ";
-  margin-right: 0.5rem;
-}
-
-/* Alert animations */
-@keyframes pulse-alert {
-  0%, 100% {
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-  }
-  50% {
-    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
-  }
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
-}
-
-/* Dark Mode bug fixes */
+/* Dark mode bug fixes   */
 
 /* Cards and containers in dark mode */
 [data-theme="dark"] .search-filter-section,
