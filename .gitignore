@@ -1,3 +1,43 @@
-/C372 Individual CA1 AI Interaction Journal - 24038188  - Ethan Wong.docx
-/~$72 Individual CA1 AI Interaction Journal - 24038188  - Ethan Wong.docx
-/~WRL0005.tmp
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+log/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Build output
+dist/
+build/
+
+# IDE settings
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Word documents and temp files
+*.docx
+~$*
+*.tmp
+
+# Optional: Ignore all Office temp files
+~$*.*
