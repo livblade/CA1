@@ -2,9 +2,14 @@ const productModel = require('../models/productModel');
 
 module.exports = {
     // Get all products (renders inventory for admins, shopping for users)
+    // Supports search, category filter, and price sorting via query params
     getAllProducts: (req, res) => {
-        // read optional search query from querystring (e.g. /products?q=apple)
+        // read optional query params: q (search), category, sort, minPrice, maxPrice
         const q = (req.query && req.query.q) ? String(req.query.q).trim() : '';
+        const category = (req.query && req.query.category) ? String(req.query.category).trim() : '';
+        const sort = (req.query && req.query.sort) ? String(req.query.sort).trim() : '';
+        const minPrice = (req.query && req.query.minPrice) ? req.query.minPrice : '';
+        const maxPrice = (req.query && req.query.maxPrice) ? req.query.maxPrice : '';
 
         const handleResults = (err, results) => {
             if (err) {
@@ -16,15 +21,22 @@ module.exports = {
                 || (req.session && req.session.user && req.session.user.role === 'admin');
 
             const viewName = isAdminView ? 'inventory' : 'shopping';
-            // pass searchQuery back so views can keep the search input populated
-            return res.render(viewName, { products: results, user: req.session ? req.session.user : null, searchQuery: q });
+            // pass filter params back so views can keep filters populated
+            return res.render(viewName, { 
+                products: results, 
+                user: req.session ? req.session.user : null, 
+                searchQuery: q,
+                selectedCategory: category,
+                selectedSort: sort,
+                minPrice: minPrice,
+                maxPrice: maxPrice
+            });
         };
 
-        if (q) {
-            // perform a search via model
-            return productModel.searchProducts(q, handleResults);
+        // if any filter/search is applied, use searchProductsWithFilters; otherwise fallback to getAllProducts
+        if (q || category || sort || minPrice || maxPrice) {
+            return productModel.searchProductsWithFilters({ searchTerm: q, category, sort, minPrice, maxPrice }, handleResults);
         } else {
-            // return all products
             return productModel.getAllProducts(handleResults);
         }
     },
@@ -49,9 +61,9 @@ module.exports = {
         });
     },
 
-    // Add new product
+    // Add new product (now includes description and category)
     addProduct: (req, res) => {
-        const { name } = req.body;
+        const { name, description, category } = req.body;
         // accept either 'stock' or 'quantity' from forms
         let quantity = req.body.stock ?? req.body.quantity ?? '0';
         let price = req.body.price ?? '0';
@@ -64,7 +76,7 @@ module.exports = {
 
         const image = req.file ? req.file.filename : (req.body.image || null);
 
-        productModel.addProduct(name, quantity, price, image, (err) => {
+        productModel.addProduct(name, quantity, price, image, description, category, (err) => {
             if (err) {
                 req.flash('error', 'Unable to add product');
                 return res.redirect('/inventory');
@@ -74,10 +86,10 @@ module.exports = {
         });
     },
 
-    // Update product
+    // Update product (now includes description and category)
     updateProduct: (req, res) => {
         const productId = req.params.id;
-        const { name } = req.body;
+        const { name, description, category } = req.body;
 
         let quantity = req.body.stock ?? req.body.quantity ?? '0';
         let price = req.body.price ?? '0';
@@ -90,7 +102,7 @@ module.exports = {
 
         const image = req.file ? req.file.filename : (req.body.image || null);
 
-        productModel.updateProduct(productId, name, quantity, price, image, (err) => {
+        productModel.updateProduct(productId, name, quantity, price, image, description, category, (err) => {
             if (err) {
                 req.flash('error', 'Unable to update product');
                 return res.redirect('/inventory');

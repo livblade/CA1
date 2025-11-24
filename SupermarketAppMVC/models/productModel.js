@@ -36,8 +36,8 @@ module.exports = {
     return runQuery(sql, [id], cb);
   },
 
-  // addProduct(name, quantity, price, image, cb)
-  addProduct: (name, quantity, price, image, cb) => {
+  // addProduct(name, quantity, price, image, description, category, cb)
+  addProduct: (name, quantity, price, image, description, category, cb) => {
     // Normalize numeric inputs to avoid NULLs in DB
     let q = (quantity === undefined || quantity === null) ? 0 : quantity;
     let p = (price === undefined || price === null) ? 0 : price;
@@ -48,13 +48,13 @@ module.exports = {
     p = parseFloat(p);
     if (Number.isNaN(p)) p = 0.0;
 
-    const sql = 'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
-    const params = [name, q, p, image || null];
+    const sql = 'INSERT INTO products (productName, quantity, price, image, description, category) VALUES (?, ?, ?, ?, ?, ?)';
+    const params = [name, q, p, image || null, description || '', category || ''];
     return runQuery(sql, params, cb);
   },
 
-  // updateProduct(id, name, quantity, price, image, cb)
-  updateProduct: (id, name, quantity, price, image, cb) => {
+  // updateProduct(id, name, quantity, price, image, description, category, cb)
+  updateProduct: (id, name, quantity, price, image, description, category, cb) => {
     // Normalize numeric inputs to avoid NULLs in DB
     let q = (quantity === undefined || quantity === null) ? 0 : quantity;
     let p = (price === undefined || price === null) ? 0 : price;
@@ -66,8 +66,12 @@ module.exports = {
     if (Number.isNaN(p)) p = 0.0;
 
     // Use NULLIF to treat empty string as NULL, and COALESCE to keep existing image when NULL provided.
-    const sql = 'UPDATE products SET productName = ?, quantity = ?, price = ?, image = COALESCE(NULLIF(?, \'\'), image) WHERE id = ?';
-    const params = [name, q, p, image || null, id];
+    const sql = `UPDATE products SET 
+      productName = ?, quantity = ?, price = ?, 
+      image = COALESCE(NULLIF(?, ''), image),
+      description = ?, category = ?
+      WHERE id = ?`;
+    const params = [name, q, p, image || null, description || '', category || '', id];
     return runQuery(sql, params, cb);
   },
 
@@ -134,5 +138,54 @@ module.exports = {
     const term = `%${String(searchTerm).trim()}%`;
     const sql = 'SELECT * FROM products WHERE productName LIKE ? OR CAST(id AS CHAR) LIKE ?';
     return runQuery(sql, [term, term], cb);
+  },
+
+  // NEW: searchProductsWithFilters - supports search term, category filter, and price sorting
+  // params: { searchTerm, category, sort, minPrice, maxPrice }
+  searchProductsWithFilters: (filters, cb) => {
+    const { searchTerm, category, sort, minPrice, maxPrice } = filters || {};
+    let sql = 'SELECT * FROM products WHERE 1=1';
+    const params = [];
+
+    // Apply search term (name or id)
+    if (searchTerm && String(searchTerm).trim() !== '') {
+      const term = `%${String(searchTerm).trim()}%`;
+      sql += ' AND (productName LIKE ? OR CAST(id AS CHAR) LIKE ?)';
+      params.push(term, term);
+    }
+
+    // Apply category filter
+    if (category && String(category).trim() !== '' && String(category).trim().toLowerCase() !== 'all') {
+      sql += ' AND category = ?';
+      params.push(String(category).trim());
+    }
+
+    // Apply price range filters
+    if (minPrice !== undefined && minPrice !== null && minPrice !== '') {
+      const min = parseFloat(minPrice);
+      if (!Number.isNaN(min)) {
+        sql += ' AND price >= ?';
+        params.push(min);
+      }
+    }
+    if (maxPrice !== undefined && maxPrice !== null && maxPrice !== '') {
+      const max = parseFloat(maxPrice);
+      if (!Number.isNaN(max)) {
+        sql += ' AND price <= ?';
+        params.push(max);
+      }
+    }
+
+    // Apply sorting by price
+    if (sort === 'price_asc') {
+      sql += ' ORDER BY price ASC';
+    } else if (sort === 'price_desc') {
+      sql += ' ORDER BY price DESC';
+    } else {
+      // default: order by id
+      sql += ' ORDER BY id ASC';
+    }
+
+    return runQuery(sql, params, cb);
   }
 };

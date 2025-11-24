@@ -32,7 +32,8 @@
     <br>
     <div class="text-center"><h2>Products from Supermarket App Database</h2></div>
     <br>
-    <!-- NEW: Search bar for admins/inventory -->
+
+    <!-- Search bar (existing) -->
     <div class="row my-3">
       <div class="col-12">
         <form class="d-flex" method="get" action="/inventory" role="search">
@@ -46,13 +47,68 @@
       </div>
     </div>
 
+    <!-- NEW: Filter and Sort Controls -->
+    <div class="row my-3">
+      <div class="col-12">
+        <form method="get" action="/inventory" class="row g-3 align-items-end">
+          <!-- preserve search query if present -->
+          <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+            <input type="hidden" name="q" value="<%= searchQuery %>">
+          <% } %>
+
+          <!-- Category filter -->
+          <div class="col-md-3">
+            <label for="category" class="form-label">Category</label>
+            <select name="category" id="category" class="form-select">
+              <option value="">All</option>
+              <option value="Fruit" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Fruit') ? 'selected' : '' %>>Fruit</option>
+              <option value="Vegetable" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Vegetable') ? 'selected' : '' %>>Vegetable</option>
+              <option value="Meat" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Meat') ? 'selected' : '' %>>Meat</option>
+              <option value="Dairy" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Dairy') ? 'selected' : '' %>>Dairy</option>
+              <option value="Bakery" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Bakery') ? 'selected' : '' %>>Bakery</option>
+              <option value="Other" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Other') ? 'selected' : '' %>>Other</option>
+            </select>
+          </div>
+
+          <!-- Price range -->
+          <div class="col-md-2">
+            <label for="minPrice" class="form-label">Min Price</label>
+            <input type="number" name="minPrice" id="minPrice" class="form-control" placeholder="0.00" step="0.01" min="0"
+                   value="<%= typeof minPrice !== 'undefined' ? minPrice : '' %>">
+          </div>
+          <div class="col-md-2">
+            <label for="maxPrice" class="form-label">Max Price</label>
+            <input type="number" name="maxPrice" id="maxPrice" class="form-control" placeholder="99.99" step="0.01" min="0"
+                   value="<%= typeof maxPrice !== 'undefined' ? maxPrice : '' %>">
+          </div>
+
+          <!-- Sort by price -->
+          <div class="col-md-3">
+            <label for="sort" class="form-label">Sort by Price</label>
+            <select name="sort" id="sort" class="form-select">
+              <option value="">Default</option>
+              <option value="price_asc" <%= (typeof selectedSort !== 'undefined' && selectedSort === 'price_asc') ? 'selected' : '' %>>Price: Low to High</option>
+              <option value="price_desc" <%= (typeof selectedSort !== 'undefined' && selectedSort === 'price_desc') ? 'selected' : '' %>>Price: High to Low</option>
+            </select>
+          </div>
+
+          <!-- Apply filters button -->
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <table class="table table-hover small text-center">
       <thead>
           <tr>
             <th width="100">Product Name</th>
-            <th width="100">Product Image</th>
+            <th width="100">Image</th>
+            <th width="80">Category</th>
             <th width="50">Quantity</th>
             <th width="50">Price</th>
+            <th width="150">Description</th>
             <th width="50">Edit</th>
             <th width="50">Delete</th>
           </tr>
@@ -62,8 +118,10 @@
           <tr>
             <td><a href="/product/<%= products[i].id %>" ><%= products[i].productName %></a></td>
             <td><img src = "images/<%= products[i].image %>" width="20%"></td>
+            <td><%= products[i].category || 'N/A' %></td>
             <td><%= products[i].quantity %></td>
             <td>$<%= products[i].price.toFixed(2) %></td>
+            <td><%= products[i].description ? (products[i].description.length > 50 ? products[i].description.substring(0,50) + '...' : products[i].description) : '' %></td>
             <!-- Edit Link -->
             <td><a href="/updateProduct/<%= products[i].id %>">Edit</a></td>
             <!-- Delete Link -->
