@@ -1,17 +1,13 @@
-/* ============================================
-   Ethan's Grains - Custom Stylesheet
-   Vibrant Blue & Green Theme
-   ============================================ */
+/* Ethan's Grains - Custom Stylesheet. Blue + Green theme */
 
-/* CSS Custom Properties (Variables) for consistent theming */
 :root {
-  /* Vibrant blue tones - energetic and trustworthy */
+  /* Blue to signify trustworthyness */
   --primary-blue: #2196F3;
   --dark-blue: #1976D2;
   --light-blue: #BBDEFB;
   --pale-blue: #E3F2FD;
   
-  /* Vibrant green tones - fresh and lively */
+  /* Green to signify freshness */
   --primary-green: #4CAF50;
   --dark-green: #388E3C;
   --light-green: #C8E6C9;
@@ -27,6 +23,11 @@
   --white: #ffffff;
   --gray-bg: #FAFAFA;
   --border-color: #E0E0E0;
+  
+  /* Card and table header backgrounds */
+  --card-bg: #ffffff;
+  --table-header-bg: var(--primary-blue);
+  --hover-bg: var(--pale-blue);
 }
 
 /* Reset and base styles */
@@ -42,11 +43,9 @@ body {
   background-color: var(--gray-bg);
 }
 
-/* ============================================
-   Navigation Bar Styling
-   ============================================ */
+/* Navbar Styling */
 .navbar-custom {
-  /* Vibrant blue background */
+  /* Blue background */
   background-color: var(--primary-blue);
   padding: 1rem 0;
   box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
@@ -82,11 +81,9 @@ body {
   transform: translateY(-2px);
 }
 
-/* ============================================
-   Page Headers with Vibrant Background
-   ============================================ */
+/* Page Headers */
 .page-header {
-  /* Vibrant green background */
+  /* Green background */
   background-color: var(--primary-green);
   padding: 2rem;
   margin: -1rem -1rem 2rem -1rem;
@@ -102,15 +99,13 @@ body {
   text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* ============================================
-   Welcome Box for User Greeting
-   ============================================ */
+/* User Greeting */
 .welcome-box {
   background: var(--light-blue);
   padding: 1rem 1.5rem;
   border-radius: 0.5rem;
   margin-bottom: 1.5rem;
-  /* Vibrant blue left border accent */
+  /* Blue left border accent */
   border-left: 4px solid var(--primary-blue);
   box-shadow: 0 2px 4px rgba(33, 150, 243, 0.15);
 }
@@ -121,32 +116,28 @@ body {
   font-weight: 600;
 }
 
-/* ============================================
-   Alert Messages (Flash Messages)
-   ============================================ */
+/* Alerts */
 .alert {
   border-radius: 0.5rem;
   border: none;
   font-weight: 500;
 }
 
-/* Success messages with vibrant green theme */
+/* Success messages with green theme */
 .alert-success {
   background-color: var(--light-green);
   color: var(--dark-green);
   border-left: 4px solid var(--primary-green);
 }
 
-/* Error messages with vibrant red theme */
+/* Error messages with red theme */
 .alert-danger {
   background-color: #FFCDD2;
   color: #C62828;
   border-left: 4px solid #F44336;
 }
 
-/* ============================================
-   Search and Filter Section Container
-   ============================================ */
+/* Search & Filter */
 .search-filter-section {
   background: var(--white);
   padding: 1.5rem;
@@ -162,10 +153,8 @@ body {
   margin-bottom: 0.5rem;
 }
 
-/* ============================================
-   Button Styles with Vibrant Colors
-   ============================================ */
-/* Primary button (vibrant blue) */
+/* Buttons */
+/* Blue Button */
 .btn-primary {
   background-color: var(--primary-blue);
   border: none;
@@ -187,7 +176,7 @@ body {
   transform: translateY(0);
 }
 
-/* Success button (vibrant green) for positive actions */
+/* Green Button */
 .btn-success {
   background-color: var(--primary-green);
   border: none;
@@ -227,7 +216,7 @@ body {
   transform: translateY(-2px);
 }
 
-/* Danger button (vibrant red) */
+/* Red Button */
 .btn-danger {
   background-color: #F44336;
   border: none;
@@ -245,9 +234,6 @@ body {
   color: var(--white);
 }
 
-/* ============================================
-   Form Control Styles (Inputs, Selects)
-   ============================================ */
 .form-control, .form-select {
   border: 2px solid var(--border-color);
   border-radius: 0.5rem;
@@ -256,16 +242,14 @@ body {
   background-color: var(--white);
 }
 
-/* Focus state with vibrant blue ring */
+/* Focus state with blue ring */
 .form-control:focus, .form-select:focus {
   border-color: var(--primary-blue);
   box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
   outline: none;
 }
 
-/* ============================================
-   Table Styling
-   ============================================ */
+/* Table Styling */
 .table-container {
   background: var(--white);
   border-radius: 0.75rem;
@@ -278,7 +262,7 @@ body {
   margin-bottom: 0;
 }
 
-/* Table header with vibrant blue */
+/* Table header with blue */
 .table thead {
   background-color: var(--primary-blue);
   color: var(--white);
@@ -308,9 +292,6 @@ body {
   border-color: var(--border-color);
 }
 
-/* ============================================
-   Product Cards (Optional Alternative Layout)
-   ============================================ */
 .product-card {
   background: var(--white);
   border-radius: 0.75rem;
@@ -327,9 +308,7 @@ body {
   border-color: var(--primary-blue);
 }
 
-/* ============================================
-   Link Styles
-   ============================================ */
+/* Link Styles */
 a {
   color: var(--primary-blue);
   text-decoration: none;
@@ -342,9 +321,7 @@ a:hover {
   text-decoration: underline;
 }
 
-/* ============================================
-   Category Badge for Product Categories
-   ============================================ */
+/* Categories */
 .category-badge {
   display: inline-block;
   padding: 0.4rem 0.9rem;
@@ -356,9 +333,7 @@ a:hover {
   box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
 }
 
-/* ============================================
-   Cart Summary Section
-   ============================================ */
+/* Summary Selection */
 .cart-summary {
   background-color: var(--light-green);
   padding: 1.5rem;
@@ -374,9 +349,7 @@ a:hover {
   color: var(--dark-green);
 }
 
-/* ============================================
-   Footer (Optional)
-   ============================================ */
+/* Footer */
 .footer {
   background-color: var(--text-dark);
   color: var(--white);
@@ -385,9 +358,7 @@ a:hover {
   text-align: center;
 }
 
-/* ============================================
-   Responsive Design for Mobile Devices
-   ============================================ */
+/* Mobine usage */
 @media (max-width: 768px) {
   .page-header {
     padding: 1.5rem 1rem;
@@ -406,9 +377,7 @@ a:hover {
   }
 }
 
-/* ============================================
-   Quantity Input Styling
-   ============================================ */
+/* Input Styling */
 input[type="number"].qty-input {
   border: 2px solid var(--light-blue);
   border-radius: 0.5rem;
@@ -425,9 +394,7 @@ input[type="number"].qty-input:focus {
   outline: none;
 }
 
-/* ============================================
-   Product Image Styling
-   ============================================ */
+/* Image Styling */
 .product-img {
   border-radius: 0.5rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
@@ -439,9 +406,7 @@ input[type="number"].qty-input:focus {
   transform: scale(1.05);
 }
 
-/* ============================================
-   Input Group Styling (Search bars)
-   ============================================ */
+/* Seach Bars */
 .input-group .form-control {
   border-right: none;
 }
@@ -450,9 +415,6 @@ input[type="number"].qty-input:focus {
   border-left: 1px solid var(--border-color);
 }
 
-/* ============================================
-   Card/Panel Styling for Forms
-   ============================================ */
 .form-card {
   background: var(--white);
   padding: 2.5rem;
@@ -461,9 +423,6 @@ input[type="number"].qty-input:focus {
   border: 2px solid var(--border-color);
 }
 
-/* ============================================
-   Badge Variations
-   ============================================ */
 .badge-blue {
   background-color: var(--primary-blue);
   color: var(--white);
@@ -480,9 +439,6 @@ input[type="number"].qty-input:focus {
   font-weight: 600;
 }
 
-/* ============================================
-   Additional Visual Enhancements
-   ============================================ */
 /* Small button sizing */
 .btn-sm {
   padding: 0.375rem 0.75rem;
@@ -502,4 +458,268 @@ button:not(:disabled), .btn:not(:disabled) {
 button:disabled, .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  /* Dark mode color palette */
+  --primary-blue: #60A5FA;
+  --dark-blue: #3B82F6;
+  --light-blue: #1E3A8A;
+  --pale-blue: #1E293B;
+  
+  --primary-green: #10B981;
+  --dark-green: #059669;
+  --light-green: #065F46;
+  --pale-green: #064E3B;
+  
+  --accent-orange: #FB923C;
+  --accent-yellow: #FCD34D;
+  
+  --text-dark: #F3F4F6;
+  --text-light: #D1D5DB;
+  --white: #111827;
+  --gray-bg: #1F2937;
+  --border-color: #374151;
+  
+  /* Dark mode specific colors */
+  --card-bg: #1F2937;
+  --table-header-bg: #1E3A8A;
+  --hover-bg: #374151;
+}
+
+/* Light mode explicit variables (default) */
+:root {
+  /* Vibrant blue tones - energetic and trustworthy */
+  --primary-blue: #2196F3;
+  --dark-blue: #1976D2;
+  --light-blue: #BBDEFB;
+  --pale-blue: #E3F2FD;
+  
+  /* Vibrant green tones - fresh and lively */
+  --primary-green: #4CAF50;
+  --dark-green: #388E3C;
+  --light-green: #C8E6C9;
+  --pale-green: #E8F5E9;
+  
+  /* Accent colors */
+  --accent-orange: #FF9800;
+  --accent-yellow: #FFC107;
+  
+  /* Neutral colors for text and backgrounds */
+  --text-dark: #212121;
+  --text-light: #757575;
+  --white: #ffffff;
+  --gray-bg: #FAFAFA;
+  --border-color: #E0E0E0;
+  
+  /* Card and table header backgrounds */
+  --card-bg: #ffffff;
+  --table-header-bg: var(--primary-blue);
+  --hover-bg: var(--pale-blue);
+}
+
+/* Dark mode body styling */
+[data-theme="dark"] body {
+  background-color: var(--gray-bg);
+  color: var(--text-dark);
+}
+
+/* Dark Mode button */
+.theme-toggle {
+  background: var(--primary-blue);
+  border: 2px solid var(--dark-blue);
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  color: var(--white);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.theme-toggle:hover {
+  background: var(--dark-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
+[data-theme="dark"] .theme-toggle {
+  background: var(--dark-blue);
+  border-color: var(--primary-blue);
+}
+
+/* Low stock alert */
+.low-stock-alert {
+  background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  border-left: 5px solid #B91C1C;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  animation: pulse-alert 2s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.low-stock-alert-icon {
+  font-size: 2rem;
+  animation: shake 0.5s ease-in-out infinite;
+}
+
+.low-stock-alert h4 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.low-stock-alert p {
+  margin: 0.5rem 0 0 0;
+  font-weight: 500;
+}
+
+.low-stock-alert ul {
+  margin: 0.5rem 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.low-stock-alert li {
+  padding: 0.25rem 0;
+  font-weight: 600;
+}
+
+.low-stock-alert li::before {
+  content: "⚠️ ";
+  margin-right: 0.5rem;
+}
+
+/* Alert animations */
+@keyframes pulse-alert {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Dark Mode bug fixes */
+
+/* Cards and containers in dark mode */
+[data-theme="dark"] .search-filter-section,
+[data-theme="dark"] .table-container,
+[data-theme="dark"] .product-card,
+[data-theme="dark"] .form-card {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+/* Welcome box dark mode */
+[data-theme="dark"] .welcome-box {
+  background: var(--light-blue);
+  border-left-color: var(--primary-blue);
+  color: var(--text-dark);
+}
+
+/* Table dark mode */
+[data-theme="dark"] .table {
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] .table thead {
+  background-color: var(--table-header-bg);
+}
+
+[data-theme="dark"] .table tbody tr {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .table tbody tr:hover {
+  background-color: var(--hover-bg);
+}
+
+[data-theme="dark"] .table tbody td {
+  border-color: var(--border-color);
+}
+
+/* Form controls dark mode */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  background-color: var(--gray-bg);
+  border-color: var(--border-color);
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+  background-color: var(--card-bg);
+  border-color: var(--primary-blue);
+  color: var(--text-dark);
+}
+
+/* Alert messages dark mode */
+[data-theme="dark"] .alert-success {
+  background-color: var(--light-green);
+  color: var(--text-dark);
+  border-left-color: var(--primary-green);
+}
+
+[data-theme="dark"] .alert-danger {
+  background-color: #7F1D1D;
+  color: var(--text-dark);
+  border-left-color: #DC2626;
+}
+
+/* Links dark mode */
+[data-theme="dark"] a {
+  color: var(--primary-blue);
+}
+
+[data-theme="dark"] a:hover {
+  color: var(--dark-blue);
+}
+
+/* Cart summary dark mode */
+[data-theme="dark"] .cart-summary {
+  background-color: var(--light-green);
+  border-color: var(--primary-green);
+}
+
+/* Low stock row highlighting in inventory table */
+.low-stock-row {
+  background-color: #FEE2E2 !important;
+  border-left: 4px solid #DC2626;
+}
+
+[data-theme="dark"] .low-stock-row {
+  background-color: #7F1D1D !important;
+  border-left: 4px solid #EF4444;
+}
+
+.low-stock-badge {
+  background-color: #DC2626;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+  animation: pulse-badge 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
