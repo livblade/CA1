@@ -4,63 +4,62 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <title>Supermarket App</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <title>Inventory - Ethan's Grains</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/">Supermarket App</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="collapsibleNavbar">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="/addProduct">Add Product</a>
-            </li> 
-            <li class="nav-item">
-              <a class="nav-link" href="/logout">Logout</a>
-            </li> 
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-  <div class="container">
-    <p>Welcome, <%= user.username %> (<%= user.role %>)</p>
-    <br>
-    <div class="text-center"><h2>Products from Supermarket App Database</h2></div>
-    <br>
-
-    <!-- Search bar (existing) -->
-    <div class="row my-3">
-      <div class="col-12">
-        <form class="d-flex" method="get" action="/inventory" role="search">
-          <input class="form-control me-2" type="search" name="q" placeholder="Search inventory by name" aria-label="Search"
-                 value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
-          <button class="btn btn-outline-primary" type="submit">Search</button>
-          <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
-            <a href="/inventory" class="btn btn-link ms-2">Clear</a>
-          <% } %>
-        </form>
+  <nav class="navbar navbar-expand-sm navbar-custom">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <span class="brand-icon">🏪</span> Ethan's Grains
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/addProduct">Add Product</a>
+          </li> 
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li> 
+        </ul>
       </div>
     </div>
+  </nav>
 
-    <!-- NEW: Filter and Sort Controls -->
-    <div class="row my-3">
-      <div class="col-12">
-        <form method="get" action="/inventory" class="row g-3 align-items-end">
-          <!-- preserve search query if present -->
+  <div class="container mt-4">
+    <div class="welcome-box">
+      <p>Admin: <strong><%= user.username %></strong>!</p>
+    </div>
+
+    <div class="page-header">
+      <h2>Inventory Management</h2>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="search-filter-section">
+      <form method="get" action="/inventory" class="mb-3">
+        <div class="input-group">
+          <input class="form-control" type="search" name="q" placeholder="Search inventory..." 
+                 value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+          <button class="btn btn-primary" type="submit">Search</button>
           <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
-            <input type="hidden" name="q" value="<%= searchQuery %>">
+            <a href="/inventory" class="btn btn-outline-primary">Clear</a>
           <% } %>
+        </div>
+      </form>
 
-          <!-- Category filter -->
+      <form method="get" action="/inventory">
+        <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+          <input type="hidden" name="q" value="<%= searchQuery %>">
+        <% } %>
+        <div class="row g-3">
           <div class="col-md-3">
-            <label for="category" class="form-label">Category</label>
-            <select name="category" id="category" class="form-select">
-              <option value="">All</option>
+            <label class="filter-label">Category</label>
+            <select name="category" class="form-select">
+              <option value="">All Categories</option>
               <option value="Fruit" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Fruit') ? 'selected' : '' %>>Fruit</option>
               <option value="Vegetable" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Vegetable') ? 'selected' : '' %>>Vegetable</option>
               <option value="Meat" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Meat') ? 'selected' : '' %>>Meat</option>
@@ -69,67 +68,63 @@
               <option value="Other" <%= (typeof selectedCategory !== 'undefined' && selectedCategory === 'Other') ? 'selected' : '' %>>Other</option>
             </select>
           </div>
-
-          <!-- Price range -->
           <div class="col-md-2">
-            <label for="minPrice" class="form-label">Min Price</label>
-            <input type="number" name="minPrice" id="minPrice" class="form-control" placeholder="0.00" step="0.01" min="0"
+            <label class="filter-label">Min Price</label>
+            <input type="number" name="minPrice" class="form-control" placeholder="$0.00" step="0.01" min="0"
                    value="<%= typeof minPrice !== 'undefined' ? minPrice : '' %>">
           </div>
           <div class="col-md-2">
-            <label for="maxPrice" class="form-label">Max Price</label>
-            <input type="number" name="maxPrice" id="maxPrice" class="form-control" placeholder="99.99" step="0.01" min="0"
+            <label class="filter-label">Max Price</label>
+            <input type="number" name="maxPrice" class="form-control" placeholder="$99.99" step="0.01" min="0"
                    value="<%= typeof maxPrice !== 'undefined' ? maxPrice : '' %>">
           </div>
-
-          <!-- Sort by price -->
           <div class="col-md-3">
-            <label for="sort" class="form-label">Sort by Price</label>
-            <select name="sort" id="sort" class="form-select">
+            <label class="filter-label">Sort by Price</label>
+            <select name="sort" class="form-select">
               <option value="">Default</option>
-              <option value="price_asc" <%= (typeof selectedSort !== 'undefined' && selectedSort === 'price_asc') ? 'selected' : '' %>>Price: Low to High</option>
-              <option value="price_desc" <%= (typeof selectedSort !== 'undefined' && selectedSort === 'price_desc') ? 'selected' : '' %>>Price: High to Low</option>
+              <option value="price_asc" <%= (typeof selectedSort !== 'undefined' && selectedSort === 'price_asc') ? 'selected' : '' %>>Low to High</option>
+              <option value="price_desc" <%= (typeof selectedSort !== 'undefined' && selectedSort === 'price_desc') ? 'selected' : '' %>>High to Low</option>
             </select>
           </div>
-
-          <!-- Apply filters button -->
-          <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-success w-100">Apply</button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
 
-    <table class="table table-hover small text-center">
-      <thead>
+    <div class="table-container">
+      <table class="table">
+        <thead>
           <tr>
-            <th width="100">Product Name</th>
-            <th width="100">Image</th>
-            <th width="80">Category</th>
-            <th width="50">Quantity</th>
-            <th width="50">Price</th>
-            <th width="150">Description</th>
-            <th width="50">Edit</th>
-            <th width="50">Delete</th>
+            <th>Product</th>
+            <th>Image</th>
+            <th>Category</th>
+            <th>Stock</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th>Edit</th>
+            <th>Delete</th>
           </tr>
-      </thead>
-      <tbody>
-        <% for(let i=0; i < products.length; i++) { %>
-          <tr>
-            <td><a href="/product/<%= products[i].id %>" ><%= products[i].productName %></a></td>
-            <td><img src = "images/<%= products[i].image %>" width="20%"></td>
-            <td><%= products[i].category || 'N/A' %></td>
-            <td><%= products[i].quantity %></td>
-            <td>$<%= products[i].price.toFixed(2) %></td>
-            <td><%= products[i].description ? (products[i].description.length > 50 ? products[i].description.substring(0,50) + '...' : products[i].description) : '' %></td>
-            <!-- Edit Link -->
-            <td><a href="/updateProduct/<%= products[i].id %>">Edit</a></td>
-            <!-- Delete Link -->
-            <td><a href="/deleteProduct/<%= products[i].id %>" onclick="return confirm('Are you sure you want to delete this product?')">Delete</a></td>
-          </tr>
-        <% } %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% for(let i=0; i < products.length; i++) { %>
+            <tr>
+              <td><a href="/product/<%= products[i].id %>"><%= products[i].productName %></a></td>
+              <td><img src="images/<%= products[i].image %>" class="product-img" style="height:48px;"></td>
+              <td><span class="category-badge"><%= products[i].category || 'N/A' %></span></td>
+              <td><%= products[i].quantity %></td>
+              <td><strong>$<%= products[i].price.toFixed(2) %></strong></td>
+              <td><%= products[i].description ? (products[i].description.length > 40 ? products[i].description.substring(0,40) + '...' : products[i].description) : '' %></td>
+              <td><a href="/updateProduct/<%= products[i].id %>" class="btn btn-primary btn-sm">Edit</a></td>
+              <td><a href="/deleteProduct/<%= products[i].id %>" class="btn btn-danger btn-sm" onclick="return confirm('Delete this product?')">Delete</a></td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

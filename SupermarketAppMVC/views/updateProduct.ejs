@@ -4,24 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <title>Supermarket App</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <title>Update Product - Ethan's Grains</title>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <!-- Admin navigation bar -->
+  <nav class="navbar navbar-expand-sm navbar-custom">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">Supermarket App</a>
+      <a class="navbar-brand" href="/">
+        <span class="brand-icon">🏪</span> Ethan's Grains
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav ms-auto">
           <li class="nav-item">
             <a class="nav-link" href="/inventory">Inventory</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/addProduct">Add New Product</a>
+            <a class="nav-link" href="/addProduct">Add Product</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/logout">Logout</a>
@@ -31,35 +33,45 @@
     </div>
   </nav>
 
-  <!-- Main content -->
   <div class="container mt-4">
-    <h2 class="text-center mb-4">Update Product</h2>
+    <!-- Page header for update product -->
+    <div class="page-header">
+      <h2>Update Product</h2>
+    </div>
     
+    <!-- Check if product exists before rendering form -->
     <% if (product) { %>
-      <form action="/updateProduct/<%= product.id %>" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
+      <!-- Update form - submits to /updateProduct/:id with multipart encoding for file upload -->
+      <form action="/updateProduct/<%= product.id %>" method="POST" enctype="multipart/form-data" 
+            style="max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
         
+        <!-- Product name field - pre-filled with current value -->
         <div class="mb-3">
-          <label for="name" class="form-label">Product Name</label>
+          <label for="name" class="filter-label">Product Name</label>
           <input type="text" class="form-control" id="name" name="name" value="<%= product.productName %>" required>
         </div>
 
+        <!-- Quantity field - pre-filled with current stock -->
         <div class="mb-3">
-          <label for="quantity" class="form-label">Quantity</label>
+          <label for="quantity" class="filter-label">Quantity</label>
           <input type="number" class="form-control" id="quantity" name="quantity" min="0" step="1" value="<%= product.quantity %>" required>
         </div>
 
+        <!-- Price field - pre-filled with current price -->
         <div class="mb-3">
-          <label for="price" class="form-label">Price</label>
+          <label for="price" class="filter-label">Price ($)</label>
           <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" value="<%= product.price %>" required>
         </div>
 
+        <!-- Description textarea - pre-filled with current description -->
         <div class="mb-3">
-          <label for="description" class="form-label">Description</label>
+          <label for="description" class="filter-label">Description</label>
           <textarea class="form-control" id="description" name="description" rows="3"><%= product.description || '' %></textarea>
         </div>
 
+        <!-- Category dropdown - current category pre-selected -->
         <div class="mb-3">
-          <label for="category" class="form-label">Category</label>
+          <label for="category" class="filter-label">Category</label>
           <select class="form-select" id="category" name="category" required>
             <option value="">Select category...</option>
             <option value="Fruit" <%= (product.category === 'Fruit') ? 'selected' : '' %>>Fruit</option>
@@ -71,25 +83,32 @@
           </select>
         </div>
 
+        <!-- Current image display - shows existing product image -->
         <div class="mb-3">
-          <label class="form-label">Current Image</label>
+          <label class="filter-label">Current Image</label>
           <input type="text" class="form-control" name="currentImage" value="<%= product.image %>" readonly>
-          <img src="/images/<%= product.image %>" class="img-thumbnail mt-2" style="width: 150px;">
+          <img src="/images/<%= product.image %>" class="img-thumbnail mt-2 product-img" style="width: 200px;">
         </div>
 
+        <!-- File upload for new image - optional, keeps existing if not provided -->
         <div class="mb-4">
-          <label for="image" class="form-label">Upload New Image</label>
+          <label for="image" class="filter-label">Upload New Image (Optional)</label>
           <input class="form-control" type="file" id="image" name="image" accept="image/*">
+          <small class="text-muted">Leave empty to keep current image</small>
         </div>
 
+        <!-- Form action buttons -->
         <div class="d-grid gap-2">
           <button type="submit" class="btn btn-primary">Update Product</button>
-          <a href="/inventory" class="btn btn-secondary">Back to Inventory</a>
+          <a href="/inventory" class="btn btn-outline-primary">Cancel</a>
         </div>
       </form>
     <% } else { %>
+      <!-- Display message if product not found -->
       <p class="text-center">No product found.</p>
     <% } %>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

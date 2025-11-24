@@ -2,64 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Your Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    /* reuse/align styles with shopping page so buttons and qty controls match */
-    .buy-btn {
-      display: inline-block;
-      background: #1E90FF;
-      color: #fff;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      box-shadow: none;
-    }
-    .buy-btn.small { padding: 6px 10px; font-size: 0.95rem; border-radius: 8px; }
-
-    /* Shared rounded quantity control (applies to selects and number inputs) */
-    .qty-input, select.qty-input {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-color: #fff;
-      border: 2px solid #cfe6ff;
-      padding: 8px 10px;
-      border-radius: 10px; /* rounded edges */
-      min-width: 64px;
-      font-size: 1rem;
-      color: #111;
-      outline: none;
-      box-shadow: 0 0 0 4px rgba(30,144,255,0.05);
-      cursor: pointer;
-    }
-    .qty-input:focus, select.qty-input:focus {
-      border-color: #7ec0ff;
-      box-shadow: 0 0 0 6px rgba(30,144,255,0.12);
-    }
-
-    form.inline { display: inline-block; margin: 0 4px; }
-  </style>
+  <link rel="stylesheet" href="/css/style.css">
+  <title>Shopping Cart - Ethan's Grains</title>
 </head>
 <body>
-    <!-- Navbar -->
-  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-sm navbar-custom">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">Supermarket App</a>
+      <a class="navbar-brand" href="/">
+        <span class="brand-icon">🏪</span> Ethan's Grains
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav ms-auto">
           <li class="nav-item">
             <a class="nav-link" href="/shopping">Shop</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/cart">View Cart</a>
+            <a class="nav-link" href="/cart">Cart</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/logout">Logout</a>
@@ -68,81 +32,116 @@
       </div>
     </div>
   </nav>
-  <!-- Cart Content -->
-  <div class="container">
-    <h2 class="mt-4">Shopping Cart</h2>
+
+  <div class="container mt-4">
+    <!-- Page header -->
+    <div class="page-header">
+      <h2>Shopping Cart</h2>
+    </div>
+
+    <!-- Check if cart is empty -->
     <% if (!cart || cart.length === 0) { %>
-      <p>Your cart is empty.</p>
+      <!-- Empty cart message -->
+      <div style="text-align: center; padding: 3rem; background: white; border-radius: 0.75rem;">
+        <p style="font-size: 1.25rem; color: #6b7280;">Your cart is empty.</p>
+        <a href="/shopping" class="btn btn-success mt-3">Start Shopping</a>
+      </div>
     <% } else { %>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Image</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Line total</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% cart.forEach(function(item) { %>
+      <!-- Cart items table -->
+      <div class="table-container">
+        <table class="table">
+          <thead>
             <tr>
-              <td><%= item.productName %></td>
-              <td>
-                <% if (item.image) { %>
-                  <img src="/images/<%= item.image %>" alt="<%= item.productName %>" style="height:48px">
-                <% } %>
-              </td>
-              <td>$<%= (parseFloat(item.price) || 0).toFixed(2) %></td>
-              <td>
-                <!-- Update quantity form: select uses class="qty-input" and now ensures current quantity is shown/selected -->
-                <form method="post" action="/cart/update" class="inline">
-                  <input type="hidden" name="productId" value="<%= item.productId %>">
-                  <select name="quantity" class="qty-input" aria-label="Quantity">
-                    <% 
-                      const currentQty = parseInt(item.quantity,10) || 0;
-                      // show at least 1..10, but extend up to the current quantity (cap to avoid extremely long lists)
-                      const maxOption = Math.min(Math.max(10, currentQty), 50);
-                      for (let q = 1; q <= maxOption; q++) { 
-                    %>
-                      <option value="<%= q %>" <%= (currentQty === q) ? 'selected' : '' %>><%= q %></option>
-                    <% } %>
-                    <% if (currentQty > maxOption) { %>
-                      <!-- if quantity exceeds cap, append the exact value so it's selectable and shown -->
-                      <option value="<%= currentQty %>" selected><%= currentQty %></option>
-                    <% } %>
-                  </select>
-                  <button type="submit" class="buy-btn small">Update</button>
-                </form>
-              </td>
-              <td>$<%= ((parseFloat(item.price) || 0) * (parseInt(item.quantity,10) || 0)).toFixed(2) %></td>
-              <td>
-                <!-- Remove item form; posts to /cart/remove/:id -->
-                <form method="post" action="/cart/remove/<%= item.productId %>" class="inline">
-                  <button type="submit" class="buy-btn small">Remove</button>
-                </form>
-              </td>
+              <th>Item</th>
+              <th>Image</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Line Total</th>
+              <th>Actions</th>
             </tr>
-          <% }); %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <!-- Loop through cart items -->
+            <% cart.forEach(function(item) { %>
+              <tr>
+                <!-- Product name -->
+                <td><strong><%= item.productName %></strong></td>
+                
+                <!-- Product image -->
+                <td>
+                  <% if (item.image) { %>
+                    <img src="/images/<%= item.image %>" alt="<%= item.productName %>" class="product-img" style="height:60px;">
+                  <% } %>
+                </td>
+                
+                <!-- Unit price -->
+                <td><strong>$<%= (parseFloat(item.price) || 0).toFixed(2) %></strong></td>
+                
+                <!-- Quantity update form with dropdown -->
+                <td>
+                  <form method="post" action="/cart/update" style="display:inline-block;">
+                    <input type="hidden" name="productId" value="<%= item.productId %>">
+                    <select name="quantity" class="form-select" style="width: 100px; display: inline-block;" 
+                            onchange="this.form.submit()">
+                      <% 
+                        // Current quantity in cart
+                        const currentQty = parseInt(item.quantity,10) || 0;
+                        // Show options from 1 to max(10, currentQty), capped at 50
+                        const maxOption = Math.min(Math.max(10, currentQty), 50);
+                        for (let q = 1; q <= maxOption; q++) { 
+                      %>
+                        <option value="<%= q %>" <%= (currentQty === q) ? 'selected' : '' %>><%= q %></option>
+                      <% } %>
+                      <!-- If quantity exceeds cap, add exact value -->
+                      <% if (currentQty > maxOption) { %>
+                        <option value="<%= currentQty %>" selected><%= currentQty %></option>
+                      <% } %>
+                    </select>
+                  </form>
+                </td>
+                
+                <!-- Line total (price × quantity) -->
+                <td><strong>$<%= ((parseFloat(item.price) || 0) * (parseInt(item.quantity,10) || 0)).toFixed(2) %></strong></td>
+                
+                <!-- Remove item button -->
+                <td>
+                  <form method="post" action="/cart/remove/<%= item.productId %>" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
 
-      <!-- Totals and actions -->
-      <section>
-        <p><strong>Total:</strong> $<%= (typeof total !== 'undefined' ? total.toFixed(2) : (cart.reduce((s,i)=> s + ((parseFloat(i.price)||0)*(parseInt(i.quantity,10)||0)),0)).toFixed(2)) %></p>
+      <!-- Cart summary section with gradient background -->
+      <div class="cart-summary">
+        <!-- Cart total -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 style="color: #1e40af; margin: 0;">Cart Total:</h3>
+          <span class="cart-total">$<%= (typeof total !== 'undefined' ? total.toFixed(2) : (cart.reduce((s,i)=> s + ((parseFloat(i.price)||0)*(parseInt(i.quantity,10)||0)),0)).toFixed(2)) %></span>
+        </div>
 
-        <!-- Clear cart -->
-        <form method="post" action="/cart/clear" class="inline" style="margin-right:8px">
-          <button type="submit" class="buy-btn" onclick="return confirm('Clear cart?')">Clear cart</button>
-        </form>
+        <!-- Action buttons -->
+        <div class="d-flex gap-2 justify-content-end">
+          <!-- Clear cart button - removes all items -->
+          <form method="post" action="/cart/clear" style="display:inline;">
+            <button type="submit" class="btn btn-outline-primary" onclick="return confirm('Clear entire cart?')">Clear Cart</button>
+          </form>
 
-        <!-- Checkout -->
-        <form method="post" action="/checkout" class="inline">
-          <button type="submit" class="buy-btn">Checkout</button>
-        </form>
-      </section>
+          <!-- Continue shopping link -->
+          <a href="/shopping" class="btn btn-primary">Continue Shopping</a>
+
+          <!-- Checkout button - proceeds to order creation -->
+          <form method="post" action="/checkout" style="display:inline;">
+            <button type="submit" class="btn btn-success">Proceed to Checkout</button>
+          </form>
+        </div>
+      </div>
     <% } %>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
