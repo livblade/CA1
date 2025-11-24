@@ -143,10 +143,6 @@
               <td><span class="category-badge"><%= products[i].category || 'N/A' %></span></td>
               <td>
                 <%= products[i].quantity %>
-                <!-- Show low stock badge if quantity < 5 -->
-                <% if (parseInt(products[i].quantity, 10) < 5) { %>
-                  <span class="low-stock-badge">LOW</span>
-                <% } %>
               </td>
               <td><strong>$<%= products[i].price.toFixed(2) %></strong></td>
               <td><%= products[i].description ? (products[i].description.length > 40 ? products[i].description.substring(0,40) + '...' : products[i].description) : '' %></td>
