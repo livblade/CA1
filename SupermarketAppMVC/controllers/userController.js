@@ -159,7 +159,7 @@ module.exports = {
             
             // Redirect based on role
             if (sessionUser.role === 'admin') {
-                return res.redirect('/inventory');
+                return res.redirect('/dashboard');
             } else {
                 return res.redirect('/shopping');
             }

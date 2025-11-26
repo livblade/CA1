@@ -19,6 +19,9 @@
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
+            <a class="nav-link" href="/dashboard">Dashboard</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="/inventory">Inventory</a>
           </li>
           <li class="nav-item">
@@ -88,6 +91,7 @@
                 <td><%= u.address || 'N/A' %></td>
                 <td>
                   <a href="/users/<%= u.id %>" class="btn btn-primary btn-sm">View</a>
+                  <a href="/users/edit/<%= u.id %>" class="btn btn-success btn-sm">Edit</a>
                   <a href="/users/delete/<%= u.id %>" class="btn btn-danger btn-sm" 
                      onclick="return confirm('Delete this user?')">Delete</a>
                 </td>

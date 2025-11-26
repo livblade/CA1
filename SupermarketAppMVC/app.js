@@ -118,6 +118,30 @@ app.get('/inventory', checkAuthenticated, checkAdmin, (req, res, next) => {
     return productController.getAllProducts(req, res, next);
 });
 
+// NEW: Admin dashboard - shows stats and navigation
+app.get('/dashboard', checkAuthenticated, checkAdmin, (req, res, next) => {
+    const productModel = require('./models/productModel');
+    const userModel = require('./models/userModel');
+    
+    // Fetch stats for dashboard
+    productModel.getAllProducts((err, products) => {
+        if (err) return next(err);
+        
+        userModel.getAllUsers((err2, users) => {
+            if (err2) return next(err2);
+            
+            const stats = {
+                totalProducts: products.length,
+                lowStockCount: products.filter(p => parseInt(p.quantity, 10) < 5).length,
+                totalUsers: users.length,
+                adminCount: users.filter(u => u.role === 'admin').length
+            };
+            
+            res.render('dashboard', { user: req.session.user, stats });
+        });
+    });
+});
+
 // Render add product form (no DB access needed here)
 app.get('/addProduct', checkAuthenticated, checkAdmin, (req, res) => {
     res.render('addProduct', {user: req.session.user } ); 
@@ -147,11 +171,22 @@ app.get('/users/:id', checkAuthenticated, (req, res, next) => {
     return userController.getUserById(req, res, next);
 });
 
+// NEW: Render user edit form
+app.get('/users/edit/:id', checkAuthenticated, checkAdmin, (req, res, next) => {
+    const userModel = require('./models/userModel');
+    userModel.getUserById(req.params.id, (err, result) => {
+        if (err) return next(err);
+        const userData = Array.isArray(result) ? result[0] : result;
+        if (!userData) return res.status(404).send('User not found');
+        res.render('users/edit', { userData, user: req.session.user });
+    });
+});
+
 app.post('/users/add', upload.single('image'), validateRegistration, (req, res, next) => {
     return userController.addUser(req, res, next);
 });
 
-app.post('/users/update/:id', upload.single('image'), (req, res, next) => {
+app.post('/users/update/:id', checkAuthenticated, checkAdmin, upload.single('image'), (req, res, next) => {
     return userController.updateUser(req, res, next);
 });
 
@@ -177,6 +212,14 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res, next) => {
     // delegate authentication to controller
     return userController.login(req, res, next);
+});
+
+// Redirect to dashboard after successful admin login
+app.use((req, res, next) => {
+    if (req.session.user && req.session.user.role === 'admin' && req.path === '/') {
+        return res.redirect('/dashboard');
+    }
+    next();
 });
 
 // Shopping list - reuse product controller for listing available products
