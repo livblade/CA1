@@ -43,6 +43,26 @@
       <h2>Add New Product</h2>
     </div>
 
+    <!-- Display error messages -->
+    <% if (errors && errors.length > 0) { %>
+      <% errors.forEach(function(error) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= error %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% }); %>
+    <% } %>
+
+    <!-- Display success messages -->
+    <% if (messages && messages.length > 0) { %>
+      <% messages.forEach(function(message) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= message %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% }); %>
+    <% } %>
+
     <!-- Add product form - submits to /addProduct with multipart encoding for image upload -->
     <form action="/addProduct" method="POST" enctype="multipart/form-data" 
           style="max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">

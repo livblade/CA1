@@ -77,10 +77,27 @@ module.exports = {
 
     // Add new product (now includes description and category)
     addProduct: (req, res) => {
+        console.log('=== ADD PRODUCT ATTEMPT ===');
+        console.log('Request body:', req.body);
+        console.log('Request file:', req.file);
+        
         const { name, description, category } = req.body;
         // accept either 'stock' or 'quantity' from forms
         let quantity = req.body.stock ?? req.body.quantity ?? '0';
         let price = req.body.price ?? '0';
+
+        // Validation
+        if (!name || !name.trim()) {
+            console.log('ERROR: Product name is required');
+            req.flash('error', 'Product name is required');
+            return res.redirect('/addProduct');
+        }
+
+        if (!category || !category.trim()) {
+            console.log('ERROR: Category is required');
+            req.flash('error', 'Category is required');
+            return res.redirect('/addProduct');
+        }
 
         quantity = parseInt(quantity, 10);
         if (Number.isNaN(quantity)) quantity = 0;
@@ -90,11 +107,32 @@ module.exports = {
 
         const image = req.file ? req.file.filename : (req.body.image || null);
 
-        productModel.addProduct(name, quantity, price, image, description, category, (err) => {
+        if (!image) {
+            console.log('ERROR: Product image is required');
+            req.flash('error', 'Product image is required');
+            return res.redirect('/addProduct');
+        }
+
+        console.log('Processed values:');
+        console.log('- Name:', name);
+        console.log('- Quantity:', quantity);
+        console.log('- Price:', price);
+        console.log('- Image:', image);
+        console.log('- Description:', description);
+        console.log('- Category:', category);
+
+        productModel.addProduct(name, quantity, price, image, description, category, (err, results) => {
             if (err) {
-                req.flash('error', 'Unable to add product');
-                return res.redirect('/inventory');
+                console.error('=== ADD PRODUCT ERROR ===');
+                console.error('Error:', err);
+                console.error('Error code:', err.code);
+                console.error('Error message:', err.message);
+                req.flash('error', `Unable to add product: ${err.message}`);
+                return res.redirect('/addProduct');
             }
+            console.log('=== ADD PRODUCT SUCCESS ===');
+            console.log('Results:', results);
+            console.log('Inserted product ID:', results.insertId);
             req.flash('success', 'Product added successfully');
             return res.redirect('/inventory');
         });

@@ -27,12 +27,13 @@ function runQuery(sql, params, cb) {
 
 module.exports = {
   getAllProducts: (cb) => {
-    const sql = 'SELECT * FROM products';
+    // Use COALESCE to treat NULL visible as 1 (visible)
+    const sql = 'SELECT *, COALESCE(visible, 1) as visible FROM products';
     return runQuery(sql, [], cb);
   },
 
   getProductById: (id, cb) => {
-    const sql = 'SELECT * FROM products WHERE id = ?';
+    const sql = 'SELECT *, COALESCE(visible, 1) as visible FROM products WHERE id = ?';
     return runQuery(sql, [id], cb);
   },
 
@@ -48,9 +49,29 @@ module.exports = {
     p = parseFloat(p);
     if (Number.isNaN(p)) p = 0.0;
 
-    const sql = 'INSERT INTO products (productName, quantity, price, image, description, category) VALUES (?, ?, ?, ?, ?, ?)';
+    console.log('=== DATABASE INSERT ATTEMPT ===');
+    console.log('Product name:', name);
+    console.log('Quantity:', q);
+    console.log('Price:', p);
+    console.log('Image:', image);
+    console.log('Description:', description);
+    console.log('Category:', category);
+
+    // Include visible field - default to 1 (visible) for new products
+    const sql = 'INSERT INTO products (productName, quantity, price, image, description, category, visible) VALUES (?, ?, ?, ?, ?, ?, 1)';
     const params = [name, q, p, image || null, description || '', category || ''];
-    return runQuery(sql, params, cb);
+    
+    console.log('SQL:', sql);
+    console.log('Params:', params);
+    
+    return runQuery(sql, params, (err, results) => {
+      if (err) {
+        console.error('Database insert error:', err);
+      } else {
+        console.log('Database insert successful:', results);
+      }
+      if (typeof cb === 'function') cb(err, results);
+    });
   },
 
   // updateProduct(id, name, quantity, price, image, description, category, cb)
@@ -88,7 +109,8 @@ module.exports = {
 
   // --- NEW: Get products visible to customers (excludes hidden products) ---
   getVisibleProducts: (cb) => {
-    const sql = 'SELECT * FROM products WHERE visible = 1';
+    // Use COALESCE to treat NULL as visible
+    const sql = 'SELECT *, COALESCE(visible, 1) as visible FROM products WHERE COALESCE(visible, 1) = 1';
     return runQuery(sql, [], cb);
   },
 
@@ -162,12 +184,12 @@ module.exports = {
   // params: { searchTerm, category, sort, minPrice, maxPrice, isAdmin }
   searchProductsWithFilters: (filters, cb) => {
     const { searchTerm, category, sort, minPrice, maxPrice, isAdmin } = filters || {};
-    let sql = 'SELECT * FROM products WHERE 1=1';
+    let sql = 'SELECT *, COALESCE(visible, 1) as visible FROM products WHERE 1=1';
     const params = [];
 
     // Add visibility filter for non-admin users
     if (!isAdmin) {
-      sql += ' AND visible = 1';
+      sql += ' AND COALESCE(visible, 1) = 1';
     }
 
     // Apply search term (name or id)

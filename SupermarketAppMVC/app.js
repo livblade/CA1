@@ -14,7 +14,14 @@ const storage = multer.diskStorage({
         cb(null, 'public/images'); // Directory to save uploaded files
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname); 
+        // Generate shorter filename using timestamp + sanitized original name
+        const timestamp = Date.now();
+        const ext = file.originalname.split('.').pop();
+        // Get base name without extension and limit to 50 characters
+        const baseName = file.originalname.replace(/\.[^/.]+$/, '').substring(0, 50);
+        // Create filename: timestamp-basename.ext (max ~65 chars)
+        const filename = `${timestamp}-${baseName}.${ext}`;
+        cb(null, filename);
     }
 });
 
