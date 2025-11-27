@@ -389,6 +389,75 @@ module.exports = {
         });
     },
 
+    // NEW: Get all orders for admin view (GET /admin/orders)
+    getAllOrders: (req, res, next) => {
+        productModel.getAllOrders((err, rows) => {
+            if (err) return next(err);
+            // group rows by orderId
+            const ordersMap = new Map();
+            rows.forEach(r => {
+                if (!ordersMap.has(r.orderId)) {
+                    ordersMap.set(r.orderId, {
+                        orderId: r.orderId,
+                        userId: r.userId,
+                        username: r.username,
+                        email: r.email,
+                        address: r.address,
+                        contact: r.contact,
+                        total: r.total,
+                        createdAt: r.createdAt,
+                        items: []
+                    });
+                }
+                if (r.productId) {
+                    ordersMap.get(r.orderId).items.push({
+                        productId: r.productId,
+                        productName: r.productName,
+                        price: r.price,
+                        quantity: r.quantity
+                    });
+                }
+            });
+            const orders = Array.from(ordersMap.values());
+            return res.render('admin/orders', { orders, user: req.session.user });
+        });
+    },
+
+    // NEW: Get invoice for admin with user info (GET /admin/invoice/:orderId)
+    getAdminInvoice: (req, res, next) => {
+        const orderId = req.params.orderId;
+        productModel.getOrderByIdWithUser(orderId, (err, rows) => {
+            if (err) return next(err);
+            if (!rows || rows.length === 0) {
+                return res.status(404).send('Order not found');
+            }
+            // group into header + items with user info
+            const header = {
+                orderId: rows[0].orderId,
+                userId: rows[0].userId,
+                username: rows[0].username,
+                email: rows[0].email,
+                address: rows[0].address,
+                contact: rows[0].contact,
+                total: rows[0].total,
+                createdAt: rows[0].createdAt,
+                items: []
+            };
+            rows.forEach(r => {
+                if (r.productId) {
+                    header.items.push({
+                        productId: r.productId,
+                        productName: r.productName,
+                        price: r.price,
+                        quantity: r.quantity
+                    });
+                }
+            });
+            // render admin invoice view with order header/items and customer info
+            return res.render('admin/invoice', { order: header, user: req.session.user });
+        });
+    },
+
     // --- NEW: Toggle product visibility (admin only) ---
     toggleVisibility: (req, res) => {
         const productId = req.params.id;

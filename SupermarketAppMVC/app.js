@@ -316,6 +316,15 @@ app.get('/invoice/:orderId', checkAuthenticated, (req, res, next) => {
     return productController.getInvoice(req, res, next);
 });
 
+// NEW: Admin order management routes
+app.get('/admin/orders', checkAuthenticated, checkAdmin, (req, res, next) => {
+    return productController.getAllOrders(req, res, next);
+});
+
+app.get('/admin/invoice/:orderId', checkAuthenticated, checkAdmin, (req, res, next) => {
+    return productController.getAdminInvoice(req, res, next);
+});
+
 app.get('/logout', (req, res) => {
     // remove user from session but keep session for flash messages
     if (req.session) {

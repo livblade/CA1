@@ -162,6 +162,34 @@ module.exports = {
     return runQuery(sql, [orderId], cb);
   },
 
+  // NEW: Get all orders for admin view (includes user information)
+  getAllOrders: (cb) => {
+    const sql = `
+      SELECT o.id as orderId, o.userId, o.total, o.createdAt,
+             u.username, u.email, u.address, u.contact,
+             oi.productId, oi.productName, oi.price, oi.quantity
+      FROM orders o
+      LEFT JOIN users u ON u.id = o.userId
+      LEFT JOIN order_items oi ON oi.orderId = o.id
+      ORDER BY o.createdAt DESC, o.id DESC
+    `;
+    return runQuery(sql, [], cb);
+  },
+
+  // NEW: Get single order with user info for admin invoice view
+  getOrderByIdWithUser: (orderId, cb) => {
+    const sql = `
+      SELECT o.id as orderId, o.userId, o.total, o.createdAt,
+             u.username, u.email, u.address, u.contact,
+             oi.productId, oi.productName, oi.price, oi.quantity
+      FROM orders o
+      LEFT JOIN users u ON u.id = o.userId
+      LEFT JOIN order_items oi ON oi.orderId = o.id
+      WHERE o.id = ?
+    `;
+    return runQuery(sql, [orderId], cb);
+  },
+
   // --- NEW: search products by name or id (safe parameterized LIKE)
   // UPDATED: Admin sees all, users only see visible products
   searchProducts: (searchTerm, isAdmin, cb) => {
