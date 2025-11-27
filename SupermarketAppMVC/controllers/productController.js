@@ -297,7 +297,7 @@ module.exports = {
             };
         });
 
-        const userId = req.session.user && (req.session.user.userId || req.session.user.id);  // Changed
+        const userId = req.session.user && (req.session.user.userId || req.session.user.id);
         if (!userId) {
             req.flash('error', 'User not recognized');
             return res.redirect('/login');
@@ -314,15 +314,42 @@ module.exports = {
                 req.flash('error', 'Failed to create order');
                 return next(new Error('Failed to create order'));
             }
+            
+            // Save order items
             productModel.addOrderItems(insertId, items, (err2) => {
                 if (err2) {
                     req.flash('error', 'Unable to save order items');
                     return next(err2);
                 }
-                // clear cart and redirect to invoice
-                req.session.cart = [];
-                req.flash('success', 'Order placed successfully');
-                return res.redirect(`/invoice/${insertId}`);
+                
+                // NEW: Decrease stock levels for each product in the order
+                let stockUpdateCount = 0;
+                let stockUpdateErrors = [];
+                
+                items.forEach((item, index) => {
+                    productModel.decreaseProductStock(item.productId, item.quantity, (err3) => {
+                        if (err3) {
+                            console.error(`Failed to decrease stock for product ${item.productId}:`, err3);
+                            stockUpdateErrors.push(item.productName);
+                        }
+                        
+                        stockUpdateCount++;
+                        
+                        // Check if all stock updates are complete
+                        if (stockUpdateCount === items.length) {
+                            // Log any stock update errors but still complete the order
+                            if (stockUpdateErrors.length > 0) {
+                                console.warn('Stock update errors for:', stockUpdateErrors);
+                                req.flash('info', 'Order placed, but some stock levels may not have updated correctly.');
+                            }
+                            
+                            // Clear cart and redirect to invoice
+                            req.session.cart = [];
+                            req.flash('success', 'Order placed successfully');
+                            return res.redirect(`/invoice/${insertId}`);
+                        }
+                    });
+                });
             });
         });
     },

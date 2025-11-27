@@ -190,6 +190,15 @@ module.exports = {
     return runQuery(sql, [orderId], cb);
   },
 
+  // NEW: Decrease product stock by quantity (for order fulfillment)
+  decreaseProductStock: (productId, quantity, cb) => {
+    // Use SQL to safely decrease stock, preventing negative values
+    const sql = `UPDATE products 
+                 SET quantity = GREATEST(0, quantity - ?) 
+                 WHERE id = ?`;
+    return runQuery(sql, [quantity, productId], cb);
+  },
+
   // --- NEW: search products by name or id (safe parameterized LIKE)
   // UPDATED: Admin sees all, users only see visible products
   searchProducts: (searchTerm, isAdmin, cb) => {
