@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <title>Invoice - Ethan's Grains</title>
+  <style>
+    @media print {
+      .no-print { display: none; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-sm navbar-custom no-print">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <span class="brand-icon">🏪</span> Ethan's Grains
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/orders">All Orders</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>
+          <li class="nav-item">
+            <button id="theme-toggle" class="theme-toggle nav-link">Dark Mode</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <div class="no-print">
+      <div class="welcome-box">
+        <p>Admin: <strong><%= user.username %></strong></p>
+      </div>
+    </div>
+
+    <% if (order) { %>
+      <!-- Invoice Container -->
+      <div style="max-width: 800px; margin: 2rem auto; background: white; padding: 3rem; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        
+        <!-- Invoice Header -->
+        <div style="text-align: center; border-bottom: 3px solid #2196F3; padding-bottom: 1.5rem; margin-bottom: 2rem;">
+          <h1 style="color: #1e40af; font-size: 2.5rem; margin-bottom: 0.5rem;">🏪 Ethan's Grains</h1>
+          <p style="color: #6b7280; margin: 0;">The Big Cool and Amazing Online Supermarket</p>
+        </div>
+
+        <!-- Invoice Details -->
+        <div style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <h3 style="color: #1e40af; margin-bottom: 1rem;">Invoice</h3>
+              <p style="margin: 0.25rem 0;"><strong>Order ID:</strong> #<%= order.orderId %></p>
+              <p style="margin: 0.25rem 0;"><strong>Date:</strong> 
+                <%= new Date(order.createdAt).toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                }) %>
+              </p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0.25rem 0;"><strong>Customer:</strong> <%= order.username %></p>
+              <p style="margin: 0.25rem 0;"><strong>Email:</strong> <%= order.email %></p>
+              <% if (order.address) { %>
+                <p style="margin: 0.25rem 0;"><strong>Address:</strong> <%= order.address %></p>
+              <% } %>
+              <% if (order.contact) { %>
+                <p style="margin: 0.25rem 0;"><strong>Contact:</strong> <%= order.contact %></p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Items Table -->
+        <div style="margin-bottom: 2rem;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background-color: #2196F3; color: white;">
+                <th style="padding: 1rem; text-align: left; border: 1px solid #E0E0E0;">Item</th>
+                <th style="padding: 1rem; text-align: center; border: 1px solid #E0E0E0;">Quantity</th>
+                <th style="padding: 1rem; text-align: right; border: 1px solid #E0E0E0;">Unit Price</th>
+                <th style="padding: 1rem; text-align: right; border: 1px solid #E0E0E0;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% 
+                let subtotal = 0;
+                order.items.forEach(function(item) { 
+                  const itemTotal = parseFloat(item.price) * parseInt(item.quantity);
+                  subtotal += itemTotal;
+              %>
+                <tr>
+                  <td style="padding: 1rem; border: 1px solid #E0E0E0;"><%= item.productName %></td>
+                  <td style="padding: 1rem; text-align: center; border: 1px solid #E0E0E0;"><%= item.quantity %></td>
+                  <td style="padding: 1rem; text-align: right; border: 1px solid #E0E0E0;">$<%= parseFloat(item.price).toFixed(2) %></td>
+                  <td style="padding: 1rem; text-align: right; border: 1px solid #E0E0E0;"><strong>$<%= itemTotal.toFixed(2) %></strong></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Total Section -->
+        <div style="border-top: 2px solid #E0E0E0; padding-top: 1.5rem;">
+          <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+            <div style="text-align: right; min-width: 300px;">
+              <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                <span style="color: #6b7280;">Subtotal:</span>
+                <span style="font-weight: 600;">$<%= subtotal.toFixed(2) %></span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-top: 1px solid #E0E0E0;">
+                <span style="color: #6b7280;">Tax (0%):</span>
+                <span style="font-weight: 600;">$0.00</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 1rem 0; border-top: 2px solid #2196F3; margin-top: 0.5rem;">
+                <span style="font-size: 1.25rem; font-weight: 700; color: #1e40af;">Grand Total:</span>
+                <span style="font-size: 1.5rem; font-weight: 700; color: #4CAF50;">$<%= parseFloat(order.total).toFixed(2) %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Status -->
+        <div style="text-align: center; margin-top: 2rem; padding: 1rem; background-color: #E8F5E9; border-radius: 0.5rem;">
+          <p style="margin: 0; color: #388E3C; font-weight: 600;">✓ Order Confirmed - Payment Received</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="no-print" style="text-align: center; margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+          <button onclick="window.print()" class="btn btn-primary">🖨️ Print Invoice</button>
+          <a href="/admin/orders" class="btn btn-success">← Back to All Orders</a>
+        </div>
+
+        <!-- Thank You Message -->
+        <div style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #E0E0E0;">
+          <p style="color: #6b7280; font-style: italic;">Thank you for shopping with Ethan's Grains!</p>
+        </div>
+      </div>
+    <% } else { %>
+      <div style="text-align: center; padding: 3rem;">
+        <p style="font-size: 1.25rem; color: #6b7280;">Invoice not found.</p>
+        <a href="/admin/orders" class="btn btn-primary mt-3">Back to All Orders</a>
+      </div>
+    <% } %>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/theme.js"></script>
+</body>
+</html>
