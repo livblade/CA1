@@ -40,11 +40,22 @@
     </div>
   </nav>
 
+  <!-- Hidden flash messages -->
+  <script id="flash-messages" type="application/json">
+    {
+      "success": <%- JSON.stringify(messages || []) %>,
+      "errors": <%- JSON.stringify(errors || []) %>,
+      "info": <%- JSON.stringify(info || []) %>
+    }
+  </script>
+
   <div class="container mt-4">
     <!-- Page header -->
     <div class="page-header">
       <h2>Shopping Cart</h2>
     </div>
+
+    <!-- Toast container will be inserted here by JavaScript -->
 
     <!-- Check if cart is empty -->
     <% if (!cart || cart.length === 0) { %>
@@ -88,7 +99,7 @@
                 <td>
                   <form method="post" action="/cart/update" style="display:inline-block;">
                     <input type="hidden" name="productId" value="<%= item.productId %>">
-                    <select name="quantity" class="form-select" style="width: 100px; display: inline-block;" 
+                    <select name="quantity" class="form-select qty-input" style="width: 100px; display: inline-block;" 
                             onchange="this.form.submit()">
                       <% 
                         // Current quantity in cart
@@ -150,7 +161,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Dark mode theme manager -->
+  <script src="/js/toast.js"></script>
   <script src="/js/theme.js"></script>
 </body>
 </html>
