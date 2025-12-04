@@ -7,6 +7,7 @@ const app = express();
 // Import controllers
 const productController = require('./controllers/productController');
 const userController = require('./controllers/userController');
+const wishlistController = require('./controllers/wishlistController');
 
 // Set up multer for file uploads
 const storage = multer.diskStorage({
@@ -374,6 +375,31 @@ app.post('/updateProduct/:id', checkAuthenticated, checkAdmin, upload.single('im
 
 app.get('/deleteProduct/:id', checkAuthenticated, checkAdmin, (req, res, next) => {
     return productController.deleteProduct(req, res, next);
+});
+
+// Wishlist routes
+app.get('/wishlist', checkAuthenticated, (req, res, next) => {
+  return wishlistController.getWishlist(req, res, next);
+});
+
+app.post('/wishlist/add/:id', checkAuthenticated, (req, res, next) => {
+  return wishlistController.addToWishlist(req, res, next);
+});
+
+app.post('/wishlist/remove/:id', checkAuthenticated, (req, res, next) => {
+  return wishlistController.removeFromWishlist(req, res, next);
+});
+
+app.post('/wishlist/clear', checkAuthenticated, (req, res, next) => {
+  return wishlistController.clearWishlist(req, res, next);
+});
+
+app.post('/wishlist/update-notes', checkAuthenticated, (req, res, next) => {
+  return wishlistController.updateWishlistNotes(req, res, next);
+});
+
+app.post('/wishlist/move-to-cart', checkAuthenticated, (req, res, next) => {
+  return wishlistController.moveAllToCart(req, res, next);
 });
 
 const PORT = process.env.PORT || 3000;

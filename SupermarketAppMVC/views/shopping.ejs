@@ -21,6 +21,12 @@
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
+            <a class="nav-link" href="/shopping">Shop</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/wishlist">Shopping List</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="/cart">Cart</a>
           </li>
           <li class="nav-item">
@@ -185,6 +191,13 @@
                       <span class="btn-icon">🛒</span> Add to Cart
                     </button>
                   </div>
+                </form>
+                
+                <!-- Add to Wishlist Button -->
+                <form action="/wishlist/add/<%= product.id %>" method="post" class="mt-2">
+                  <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                    ❤️ Add to Shopping List
+                  </button>
                 </form>
               <% } else { %>
                 <button type="button" class="btn btn-secondary btn-block" disabled>
