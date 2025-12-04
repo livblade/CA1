@@ -41,49 +41,54 @@
     </div>
 
     <% if (user) { %>
-      <div style="max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+      <div class="user-detail-container">
         
-        <div class="mb-3">
-          <strong style="color: #1e40af;">User ID:</strong>
-          <p><%= user.id %></p>
-        </div>
-
-        <div class="mb-3">
-          <strong style="color: #1e40af;">Username:</strong>
-          <p><%= user.username %></p>
-        </div>
-
-        <div class="mb-3">
-          <strong style="color: #1e40af;">Email:</strong>
-          <p><%= user.email %></p>
-        </div>
-
-        <div class="mb-3">
-          <strong style="color: #1e40af;">Role:</strong><br>
-          <span class="<%= user.role === 'admin' ? 'badge-blue' : 'badge-green' %>">
-            <%= user.role.toUpperCase() %>
-          </span>
-        </div>
-
-        <div class="mb-3">
-          <strong style="color: #1e40af;">Contact:</strong>
-          <p><%= user.contact || 'Not provided' %></p>
-        </div>
-
-        <div class="mb-3">
-          <strong style="color: #1e40af;">Address:</strong>
-          <p><%= user.address || 'Not provided' %></p>
-        </div>
-
-        <% if (user.image) { %>
-          <div class="mb-3">
-            <strong style="color: #1e40af;">Profile Image:</strong><br>
-            <img src="/images/<%= user.image %>" class="product-img" style="max-width: 200px; margin-top: 0.5rem;">
+        <!-- User Header Card -->
+        <div class="user-detail-card">
+          <div class="user-detail-header">
+            <div class="user-avatar">
+              <%= user.username.charAt(0).toUpperCase() %>
+            </div>
+            <div>
+              <h3 class="user-detail-name"><%= user.username %></h3>
+              <span class="category-badge <%= user.role === 'admin' ? 'badge-admin' : 'badge-user' %>">
+                <%= user.role === 'admin' ? '👑 Administrator' : '👤 User' %>
+              </span>
+            </div>
           </div>
-        <% } %>
+        </div>
 
-        <div class="text-center mt-4">
+        <!-- User Information Card -->
+        <div class="user-detail-card">
+          <h4 class="user-detail-section-title">Contact Information</h4>
+          
+          <div class="user-detail-grid">
+            <div class="user-detail-item">
+              <span class="user-detail-label">📧 Email</span>
+              <span class="user-detail-value"><%= user.email %></span>
+            </div>
+
+            <div class="user-detail-item">
+              <span class="user-detail-label">📞 Contact</span>
+              <span class="user-detail-value"><%= user.contact || 'Not provided' %></span>
+            </div>
+
+            <div class="user-detail-item">
+              <span class="user-detail-label">📍 Address</span>
+              <span class="user-detail-value"><%= user.address || 'Not provided' %></span>
+            </div>
+
+            <div class="user-detail-item">
+              <span class="user-detail-label">🆔 User ID</span>
+              <span class="user-detail-value">#<%= user.id %></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="user-detail-actions">
           <a href="/users" class="btn btn-primary">← Back to Users</a>
+          <a href="/users/edit/<%= user.id %>" class="btn btn-success">✏️ Edit User</a>
         </div>
       </div>
     <% } else { %>

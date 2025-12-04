@@ -1,5 +1,5 @@
 /**
- * Dark Mode Theme Manager
+ * Dark Mode Theme Manager with Enhanced Transitions
  * Handles theme switching and persistence using localStorage
  */
 
@@ -15,10 +15,21 @@
   // Wait for DOM to be ready
   document.addEventListener('DOMContentLoaded', function() {
     initThemeToggle();
+    addTransitionClass();
   });
 
   /**
-   * Initialize theme toggle functionality
+   * Add transition class to body after initial load
+   * Prevents transitions from running on page load
+   */
+  function addTransitionClass() {
+    setTimeout(() => {
+      document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    }, 100);
+  }
+
+  /**
+   * Initialize theme toggle functionality with smooth transitions
    */
   function initThemeToggle() {
     const toggleBtn = document.getElementById('theme-toggle');
@@ -27,17 +38,32 @@
     // Set initial button text
     updateToggleButton(savedTheme);
 
-    // Add click handler
+    // Add click handler with animation
     toggleBtn.addEventListener('click', function() {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      // Add loading state
+      toggleBtn.classList.add('loading');
       
-      // Apply new theme
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      
-      // Update button
-      updateToggleButton(newTheme);
+      setTimeout(() => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        // Apply new theme with transition
+        document.documentElement.style.transition = 'all 0.3s ease';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        
+        // Update button
+        updateToggleButton(newTheme);
+        
+        // Remove loading state
+        toggleBtn.classList.remove('loading');
+        
+        // Add success animation
+        toggleBtn.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+          toggleBtn.style.transform = '';
+        }, 200);
+      }, 150);
     });
   }
 
@@ -50,9 +76,11 @@
     if (!toggleBtn) return;
 
     if (theme === 'dark') {
-      toggleBtn.innerHTML = 'Light Mode';
+      toggleBtn.innerHTML = '☀️ Light Mode';
+      toggleBtn.setAttribute('aria-label', 'Switch to light mode');
     } else {
-      toggleBtn.innerHTML = 'Dark Mode';
+      toggleBtn.innerHTML = '🌙 Dark Mode';
+      toggleBtn.setAttribute('aria-label', 'Switch to dark mode');
     }
   }
 })();

@@ -52,109 +52,146 @@
   <div class="container mt-4">
     <!-- Page header -->
     <div class="page-header">
-      <h2>Shopping Cart</h2>
+      <h2>🛒 Shopping Cart</h2>
     </div>
 
     <!-- Toast container will be inserted here by JavaScript -->
 
     <!-- Check if cart is empty -->
     <% if (!cart || cart.length === 0) { %>
-      <!-- Empty cart message -->
-      <div style="text-align: center; padding: 3rem; background: white; border-radius: 0.75rem;">
-        <p style="font-size: 1.25rem; color: #6b7280;">Your cart is empty.</p>
-        <a href="/shopping" class="btn btn-success mt-3">Start Shopping</a>
+      <!-- Empty cart state -->
+      <div class="empty-state">
+        <div class="empty-state-icon">🛒</div>
+        <h3>Your cart is empty</h3>
+        <p>Start shopping to add items to your cart</p>
+        <a href="/shopping" class="btn btn-success btn-lg">Start Shopping</a>
       </div>
     <% } else { %>
-      <!-- Cart items table -->
-      <div class="table-container">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Image</th>
-              <th>Price</th>
-              <th>Quantity</th>
-              <th>Line Total</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Loop through cart items -->
+      <div class="row g-4">
+        <!-- Cart Items Column -->
+        <div class="col-lg-8">
+          <div class="cart-items-container">
+            <h3 class="cart-section-title">
+              <span>📦 Cart Items</span>
+              <span class="cart-item-count"><%= cart.length %> <%= cart.length === 1 ? 'item' : 'items' %></span>
+            </h3>
+            
             <% cart.forEach(function(item) { %>
-              <tr>
-                <!-- Product name -->
-                <td><strong><%= item.productName %></strong></td>
-                
-                <!-- Product image -->
-                <td>
-                  <% if (item.image) { %>
-                    <img src="/images/<%= item.image %>" alt="<%= item.productName %>" class="product-img" style="height:60px;">
-                  <% } %>
-                </td>
-                
-                <!-- Unit price -->
-                <td><strong>$<%= (parseFloat(item.price) || 0).toFixed(2) %></strong></td>
-                
-                <!-- Quantity update form with dropdown -->
-                <td>
-                  <form method="post" action="/cart/update" style="display:inline-block;">
-                    <input type="hidden" name="productId" value="<%= item.productId %>">
-                    <select name="quantity" class="form-select qty-input" style="width: 100px; display: inline-block;" 
-                            onchange="this.form.submit()">
-                      <% 
-                        // Current quantity in cart
-                        const currentQty = parseInt(item.quantity,10) || 0;
-                        // Show options from 1 to max(10, currentQty), capped at 50
-                        const maxOption = Math.min(Math.max(10, currentQty), 50);
-                        for (let q = 1; q <= maxOption; q++) { 
-                      %>
-                        <option value="<%= q %>" <%= (currentQty === q) ? 'selected' : '' %>><%= q %></option>
-                      <% } %>
-                      <!-- If quantity exceeds cap, add exact value -->
-                      <% if (currentQty > maxOption) { %>
-                        <option value="<%= currentQty %>" selected><%= currentQty %></option>
-                      <% } %>
-                    </select>
-                  </form>
-                </td>
-                
-                <!-- Line total (price × quantity) -->
-                <td><strong>$<%= ((parseFloat(item.price) || 0) * (parseInt(item.quantity,10) || 0)).toFixed(2) %></strong></td>
-                
-                <!-- Remove item button -->
-                <td>
-                  <form method="post" action="/cart/remove/<%= item.productId %>" style="display:inline;">
-                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                  </form>
-                </td>
-              </tr>
-            <% }); %>
-          </tbody>
-        </table>
-      </div>
+              <div class="cart-item-card">
+                <div class="cart-item-content">
+                  <!-- Product Image -->
+                  <div class="cart-item-image">
+                    <% if (item.image) { %>
+                      <img src="/images/<%= item.image %>" alt="<%= item.productName %>" class="img-fluid">
+                    <% } else { %>
+                      <div class="product-card-no-image">📦</div>
+                    <% } %>
+                  </div>
 
-      <!-- Cart summary section with gradient background -->
-      <div class="cart-summary">
-        <!-- Cart total -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 style="color: #1e40af; margin: 0;">Cart Total:</h3>
-          <span class="cart-total">$<%= (typeof total !== 'undefined' ? total.toFixed(2) : (cart.reduce((s,i)=> s + ((parseFloat(i.price)||0)*(parseInt(i.quantity,10)||0)),0)).toFixed(2)) %></span>
+                  <!-- Product Details -->
+                  <div class="cart-item-details">
+                    <h5 class="cart-item-name"><%= item.productName %></h5>
+                    <p class="cart-item-price">
+                      <span class="price-label">Price:</span>
+                      <span class="price-value">$<%= (parseFloat(item.price) || 0).toFixed(2) %></span>
+                      <span class="price-unit">each</span>
+                    </p>
+                    
+                    <!-- Quantity selector with better styling -->
+                    <div class="cart-item-quantity-section">
+                      <form method="post" action="/cart/update" class="cart-item-quantity-form">
+                        <input type="hidden" name="productId" value="<%= item.productId %>">
+                        <label for="qty-<%= item.productId %>" class="filter-label">Quantity:</label>
+                        <div class="quantity-selector">
+                          <select name="quantity" id="qty-<%= item.productId %>" class="form-select qty-select" 
+                                  onchange="this.form.submit()">
+                            <% 
+                              const currentQty = parseInt(item.quantity,10) || 0;
+                              const maxOption = Math.min(Math.max(10, currentQty), 50);
+                              for (let q = 1; q <= maxOption; q++) { 
+                            %>
+                              <option value="<%= q %>" <%= (currentQty === q) ? 'selected' : '' %>><%= q %></option>
+                            <% } %>
+                            <% if (currentQty > maxOption) { %>
+                              <option value="<%= currentQty %>" selected><%= currentQty %></option>
+                            <% } %>
+                          </select>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+
+                  <!-- Line Total and Actions -->
+                  <div class="cart-item-actions">
+                    <div class="cart-item-total">
+                      <span class="cart-item-total-label">Subtotal</span>
+                      <span class="cart-item-total-value">$<%= ((parseFloat(item.price) || 0) * (parseInt(item.quantity,10) || 0)).toFixed(2) %></span>
+                    </div>
+                    <form method="post" action="/cart/remove/<%= item.productId %>">
+                      <button type="submit" class="btn btn-danger btn-sm btn-remove" 
+                              onclick="return confirm('Remove <%= item.productName %> from cart?')">
+                        <span>🗑️</span> Remove
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            <% }); %>
+          </div>
         </div>
 
-        <!-- Action buttons -->
-        <div class="d-flex gap-2 justify-content-end">
-          <!-- Clear cart button - removes all items -->
-          <form method="post" action="/cart/clear" style="display:inline;">
-            <button type="submit" class="btn btn-outline-primary" onclick="return confirm('Clear entire cart?')">Clear Cart</button>
-          </form>
+        <!-- Cart Summary Column -->
+        <div class="col-lg-4">
+          <div class="cart-summary-sticky">
+            <div class="cart-summary">
+              <h3 class="cart-summary-title">💳 Order Summary</h3>
+              
+              <!-- Summary Details -->
+              <div class="cart-summary-details">
+                <div class="summary-row">
+                  <span class="summary-label">Items (<%= cart.length %>):</span>
+                  <span class="summary-value">$<%= (typeof total !== 'undefined' ? total.toFixed(2) : (cart.reduce((s,i)=> s + ((parseFloat(i.price)||0)*(parseInt(i.quantity,10)||0)),0)).toFixed(2)) %></span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Shipping:</span>
+                  <span class="summary-value text-success">FREE</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Tax:</span>
+                  <span class="summary-value">$0.00</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-row summary-total">
+                  <span class="summary-label">Total:</span>
+                  <span class="cart-total">$<%= (typeof total !== 'undefined' ? total.toFixed(2) : (cart.reduce((s,i)=> s + ((parseFloat(i.price)||0)*(parseInt(i.quantity,10)||0)),0)).toFixed(2)) %></span>
+                </div>
+              </div>
 
-          <!-- Continue shopping link -->
-          <a href="/shopping" class="btn btn-primary">Continue Shopping</a>
+              <!-- Action Buttons -->
+              <div class="cart-summary-actions">
+                <form method="post" action="/checkout" style="width: 100%;">
+                  <button type="submit" class="btn btn-success btn-lg w-100 checkout-btn">
+                    ✅ Proceed to Checkout
+                  </button>
+                </form>
+                <a href="/shopping" class="btn btn-primary w-100">
+                  ← Continue Shopping
+                </a>
+                <form method="post" action="/cart/clear" style="width: 100%;">
+                  <button type="submit" class="btn btn-outline-danger w-100" 
+                          onclick="return confirm('Clear entire cart?')">
+                    🗑️ Clear Cart
+                  </button>
+                </form>
+              </div>
 
-          <!-- Checkout button - proceeds to order creation -->
-          <form method="post" action="/checkout" style="display:inline;">
-            <button type="submit" class="btn btn-success">Proceed to Checkout</button>
-          </form>
+              <!-- Security Badge -->
+              <div class="cart-security-badge">
+                <span class="security-icon">🔒</span>
+                <span class="security-text">Secure Checkout</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     <% } %>

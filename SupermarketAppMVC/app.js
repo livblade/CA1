@@ -307,6 +307,25 @@ app.post('/checkout', checkAuthenticated, (req, res, next) => {
     return productController.checkout(req, res, next);
 });
 
+// NEW: Add GET route for checkout page
+app.get('/checkout', checkAuthenticated, (req, res) => {
+    const cart = req.session.cart || [];
+    if (!cart || cart.length === 0) {
+        req.flash('error', 'Cart is empty');
+        return res.redirect('/cart');
+    }
+    
+    // Calculate total
+    cart.forEach(item => {
+        item.price = parseFloat(item.price) || 0;
+        item.quantity = parseInt(item.quantity) || 0;
+        item.total = item.price * item.quantity;
+    });
+    const total = cart.reduce((sum, item) => sum + item.total, 0);
+    
+    res.render('checkout', { cart, user: req.session.user, total });
+});
+
 // Orders & invoice
 app.get('/orders', checkAuthenticated, (req, res, next) => {
     return productController.getOrders(req, res, next);

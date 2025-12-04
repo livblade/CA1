@@ -14,6 +14,7 @@
   </style>
 </head>
 <body>
+  <!-- Navigation bar -->
   <nav class="navbar navbar-expand-sm navbar-custom no-print">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">
@@ -45,29 +46,22 @@
   </nav>
 
   <div class="container mt-4">
-    <div class="no-print">
-      <div class="welcome-box">
-        <p>Welcome, <strong><%= user.username %></strong>!</p>
-      </div>
-    </div>
-
     <% if (order) { %>
       <!-- Invoice Container -->
-      <div style="max-width: 800px; margin: 2rem auto; background: white; padding: 3rem; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-        
+      <div class="invoice-container">
         <!-- Invoice Header -->
-        <div style="text-align: center; border-bottom: 3px solid #2196F3; padding-bottom: 1.5rem; margin-bottom: 2rem;">
-          <h1 style="color: #1e40af; font-size: 2.5rem; margin-bottom: 0.5rem;">🏪 Ethan's Grains</h1>
-          <p style="color: #6b7280; margin: 0;">The Big Cool and Amazing Online Supermarket</p>
+        <div class="invoice-header">
+          <h1 class="invoice-title">🏪 Ethan's Grains</h1>
+          <p class="invoice-subtitle">The Big Cool and Amazing Online Supermarket</p>
         </div>
 
         <!-- Invoice Details -->
-        <div style="margin-bottom: 2rem;">
-          <div style="display: flex; justify-content: space-between; align-items: start;">
+        <div class="invoice-details">
+          <div class="invoice-details-row">
             <div>
-              <h3 style="color: #1e40af; margin-bottom: 1rem;">Invoice</h3>
-              <p style="margin: 0.25rem 0;"><strong>Order ID:</strong> #<%= order.orderId %></p>
-              <p style="margin: 0.25rem 0;"><strong>Date:</strong> 
+              <h3 class="invoice-section-title">Invoice</h3>
+              <p class="invoice-info-line"><strong>Order ID:</strong> #<%= order.orderId %></p>
+              <p class="invoice-info-line"><strong>Date:</strong> 
                 <%= new Date(order.createdAt).toLocaleDateString('en-US', { 
                   year: 'numeric', 
                   month: 'long', 
@@ -77,28 +71,28 @@
                 }) %>
               </p>
             </div>
-            <div style="text-align: right;">
-              <p style="margin: 0.25rem 0;"><strong>Customer:</strong> <%= user.username %></p>
-              <p style="margin: 0.25rem 0;"><strong>Email:</strong> <%= user.email %></p>
+            <div class="invoice-customer-info">
+              <p class="invoice-info-line"><strong>Customer:</strong> <%= user.username %></p>
+              <p class="invoice-info-line"><strong>Email:</strong> <%= user.email %></p>
               <% if (user.address) { %>
-                <p style="margin: 0.25rem 0;"><strong>Address:</strong> <%= user.address %></p>
+                <p class="invoice-info-line"><strong>Address:</strong> <%= user.address %></p>
               <% } %>
               <% if (user.contact) { %>
-                <p style="margin: 0.25rem 0;"><strong>Contact:</strong> <%= user.contact %></p>
+                <p class="invoice-info-line"><strong>Contact:</strong> <%= user.contact %></p>
               <% } %>
             </div>
           </div>
         </div>
 
         <!-- Items Table -->
-        <div style="margin-bottom: 2rem;">
-          <table style="width: 100%; border-collapse: collapse;">
+        <div class="invoice-table-wrapper">
+          <table class="invoice-table">
             <thead>
-              <tr style="background-color: #2196F3; color: white;">
-                <th style="padding: 1rem; text-align: left; border: 1px solid #E0E0E0;">Item</th>
-                <th style="padding: 1rem; text-align: center; border: 1px solid #E0E0E0;">Quantity</th>
-                <th style="padding: 1rem; text-align: right; border: 1px solid #E0E0E0;">Unit Price</th>
-                <th style="padding: 1rem; text-align: right; border: 1px solid #E0E0E0;">Total</th>
+              <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
               </tr>
             </thead>
             <tbody>
@@ -109,10 +103,10 @@
                   subtotal += itemTotal;
               %>
                 <tr>
-                  <td style="padding: 1rem; border: 1px solid #E0E0E0;"><%= item.productName %></td>
-                  <td style="padding: 1rem; text-align: center; border: 1px solid #E0E0E0;"><%= item.quantity %></td>
-                  <td style="padding: 1rem; text-align: right; border: 1px solid #E0E0E0;">$<%= parseFloat(item.price).toFixed(2) %></td>
-                  <td style="padding: 1rem; text-align: right; border: 1px solid #E0E0E0;"><strong>$<%= itemTotal.toFixed(2) %></strong></td>
+                  <td><%= item.productName %></td>
+                  <td><%= item.quantity %></td>
+                  <td>$<%= parseFloat(item.price).toFixed(2) %></td>
+                  <td><strong>$<%= itemTotal.toFixed(2) %></strong></td>
                 </tr>
               <% }); %>
             </tbody>
@@ -120,45 +114,44 @@
         </div>
 
         <!-- Total Section -->
-        <div style="border-top: 2px solid #E0E0E0; padding-top: 1.5rem;">
-          <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
-            <div style="text-align: right; min-width: 300px;">
-              <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
-                <span style="color: #6b7280;">Subtotal:</span>
-                <span style="font-weight: 600;">$<%= subtotal.toFixed(2) %></span>
-              </div>
-              <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-top: 1px solid #E0E0E0;">
-                <span style="color: #6b7280;">Tax (0%):</span>
-                <span style="font-weight: 600;">$0.00</span>
-              </div>
-              <div style="display: flex; justify-content: space-between; padding: 1rem 0; border-top: 2px solid #2196F3; margin-top: 0.5rem;">
-                <span style="font-size: 1.25rem; font-weight: 700; color: #1e40af;">Grand Total:</span>
-                <span style="font-size: 1.5rem; font-weight: 700; color: #4CAF50;">$<%= parseFloat(order.total).toFixed(2) %></span>
-              </div>
+        <div class="invoice-totals">
+          <div class="invoice-totals-content">
+            <div class="invoice-total-row">
+              <span>Subtotal:</span>
+              <span class="invoice-total-value">$<%= subtotal.toFixed(2) %></span>
+            </div>
+            <div class="invoice-total-row invoice-total-row-border">
+              <span>Tax (0%):</span>
+              <span class="invoice-total-value">$0.00</span>
+            </div>
+            <div class="invoice-grand-total">
+              <span>Grand Total:</span>
+              <span class="invoice-grand-total-amount">$<%= parseFloat(order.total).toFixed(2) %></span>
             </div>
           </div>
         </div>
 
         <!-- Payment Status -->
-        <div style="text-align: center; margin-top: 2rem; padding: 1rem; background-color: #E8F5E9; border-radius: 0.5rem;">
-          <p style="margin: 0; color: #388E3C; font-weight: 600;">✓ Order Confirmed - Payment Received</p>
+        <div class="invoice-status">
+          <p>✓ Order Confirmed - Payment Received</p>
         </div>
 
         <!-- Action Buttons -->
-        <div class="no-print" style="text-align: center; margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+        <div class="invoice-actions no-print">
           <button onclick="window.print()" class="btn btn-primary">🖨️ Print Invoice</button>
           <a href="/orders" class="btn btn-success">← Back to Orders</a>
-          <a href="/shopping" class="btn btn-outline-primary">Continue Shopping</a>
         </div>
 
         <!-- Thank You Message -->
-        <div style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #E0E0E0;">
-          <p style="color: #6b7280; font-style: italic;">Thank you for shopping with Ethan's Grains!</p>
+        <div class="invoice-footer">
+          <p>Thank you for shopping with Ethan's Grains!</p>
         </div>
       </div>
     <% } else { %>
-      <div style="text-align: center; padding: 3rem;">
-        <p style="font-size: 1.25rem; color: #6b7280;">Invoice not found.</p>
+      <div class="empty-state">
+        <div class="empty-state-icon">📄</div>
+        <h3>Invoice not found</h3>
+        <p>The requested invoice could not be found.</p>
         <a href="/orders" class="btn btn-primary mt-3">Back to Orders</a>
       </div>
     <% } %>

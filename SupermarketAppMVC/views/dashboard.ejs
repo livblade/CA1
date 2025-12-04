@@ -44,63 +44,127 @@
     </div>
 
     <div class="page-header">
-      <h2>Admin Dashboard</h2>
+      <h2>📊 Admin Dashboard</h2>
     </div>
 
-    <!-- Dashboard Cards -->
-    <div class="row mt-4">
+    <!-- Dashboard Stats Grid -->
+    <div class="row g-4 mb-4">
+      <!-- Total Products Card -->
+      <div class="col-md-6 col-lg-3">
+        <div class="dashboard-stat-card stat-primary">
+          <div class="stat-icon">📦</div>
+          <div class="stat-content">
+            <h3 class="stat-number"><%= stats.totalProducts %></h3>
+            <p class="stat-label">Total Products</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Low Stock Card -->
+      <div class="col-md-6 col-lg-3">
+        <div class="dashboard-stat-card stat-warning">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-content">
+            <h3 class="stat-number"><%= stats.lowStockCount %></h3>
+            <p class="stat-label">Low Stock Items</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Users Card -->
+      <div class="col-md-6 col-lg-3">
+        <div class="dashboard-stat-card stat-success">
+          <div class="stat-icon">👥</div>
+          <div class="stat-content">
+            <h3 class="stat-number"><%= stats.totalUsers %></h3>
+            <p class="stat-label">Total Users</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Count Card -->
+      <div class="col-md-6 col-lg-3">
+        <div class="dashboard-stat-card stat-info">
+          <div class="stat-icon">👑</div>
+          <div class="stat-content">
+            <h3 class="stat-number"><%= stats.adminCount %></h3>
+            <p class="stat-label">Administrators</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Management Cards -->
+    <div class="row g-4 mb-4">
       <!-- Inventory Management Card -->
-      <div class="col-md-6 mb-4">
+      <div class="col-md-6">
         <div class="dashboard-card">
-          <div class="dashboard-icon">📦</div>
-          <h3>Inventory Management</h3>
-          <p>Manage products, update stock levels, add new items, and monitor inventory status.</p>
-          <div class="dashboard-stats">
-            <span class="stat-badge">Total Products: <strong><%= stats.totalProducts %></strong></span>
+          <div class="dashboard-card-header">
+            <div class="dashboard-card-icon">📦</div>
+            <h3>Inventory Management</h3>
+          </div>
+          <p class="dashboard-card-description">
+            Manage products, update stock levels, add new items, and monitor inventory status.
+          </p>
+          <div class="dashboard-stats-badges">
+            <span class="stat-badge">Products: <strong><%= stats.totalProducts %></strong></span>
             <% if (stats.lowStockCount > 0) { %>
-              <span class="stat-badge stat-warning">Low Stock: <strong><%= stats.lowStockCount %></strong></span>
+              <span class="stat-badge stat-badge-warning">Low Stock: <strong><%= stats.lowStockCount %></strong></span>
             <% } %>
           </div>
-          <a href="/inventory" class="btn btn-primary mt-3">Go to Inventory →</a>
+          <a href="/inventory" class="btn btn-primary mt-3">Manage Inventory →</a>
         </div>
       </div>
 
       <!-- User Management Card -->
-      <div class="col-md-6 mb-4">
+      <div class="col-md-6">
         <div class="dashboard-card">
-          <div class="dashboard-icon">👥</div>
-          <h3>User Management</h3>
-          <p>View, edit, and manage user accounts. Monitor user activity and maintain system security.</p>
-          <div class="dashboard-stats">
-            <span class="stat-badge">Total Users: <strong><%= stats.totalUsers %></strong></span>
-            <span class="stat-badge">Admins: <strong><%= stats.adminCount %></strong></span>
+          <div class="dashboard-card-header">
+            <div class="dashboard-card-icon">👥</div>
+            <h3>User Management</h3>
           </div>
-          <a href="/users" class="btn btn-success mt-3">Go to Users →</a>
+          <p class="dashboard-card-description">
+            View, edit, and manage user accounts. Monitor user activity and maintain system security.
+          </p>
+          <div class="dashboard-stats-badges">
+            <span class="stat-badge">Users: <strong><%= stats.totalUsers %></strong></span>
+            <span class="stat-badge stat-badge-success">Admins: <strong><%= stats.adminCount %></strong></span>
+          </div>
+          <a href="/users" class="btn btn-success mt-3">Manage Users →</a>
         </div>
       </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="page-header mt-4">
-      <h3>Quick Actions</h3>
+    <!-- Quick Actions Section -->
+    <div class="dashboard-section-header">
+      <h3>⚡ Quick Actions</h3>
     </div>
-    <div class="row">
-      <div class="col-md-4 mb-3">
+    <div class="row g-3">
+      <div class="col-md-4">
         <a href="/addProduct" class="quick-action-card">
-          <span class="quick-action-icon">➕</span>
-          <span>Add New Product</span>
+          <div class="quick-action-icon">➕</div>
+          <div class="quick-action-content">
+            <h4>Add Product</h4>
+            <p>Add new items to inventory</p>
+          </div>
         </a>
       </div>
-      <div class="col-md-4 mb-3">
+      <div class="col-md-4">
         <a href="/register" class="quick-action-card">
-          <span class="quick-action-icon">👨</span>
-          <span>Add New User</span>
+          <div class="quick-action-icon">👨‍💼</div>
+          <div class="quick-action-content">
+            <h4>Add User</h4>
+            <p>Create new user account</p>
+          </div>
         </a>
       </div>
-      <div class="col-md-4 mb-3">
+      <div class="col-md-4">
         <a href="/admin/orders" class="quick-action-card">
-          <span class="quick-action-icon">🧾</span>
-          <span>View Orders</span>
+          <div class="quick-action-icon">📋</div>
+          <div class="quick-action-content">
+            <h4>View Orders</h4>
+            <p>Check all customer orders</p>
+          </div>
         </a>
       </div>
     </div>
