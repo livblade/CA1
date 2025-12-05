@@ -1,10 +1,28 @@
 /**
  * AI Chatbot for Ethan's Grains Supermarket
  * Provides intelligent assistance for customers
+ * ONLY AVAILABLE FOR LOGGED-IN REGULAR USERS
  */
 
 (function() {
   'use strict';
+
+  // Check if user is logged in and is a regular user (not admin)
+  // This relies on the page having user data available
+  function shouldShowChatbot() {
+    // Check if we're on a page that has user data
+    const navLinks = document.querySelectorAll('.nav-link');
+    const hasLogout = Array.from(navLinks).some(link => link.getAttribute('href') === '/logout');
+    const hasRegister = Array.from(navLinks).some(link => link.getAttribute('href') === '/register');
+    const hasInventory = Array.from(navLinks).some(link => link.getAttribute('href') === '/inventory');
+    const hasDashboard = Array.from(navLinks).some(link => link.getAttribute('href') === '/dashboard');
+    
+    // Show chatbot only if:
+    // 1. User is logged in (has logout link)
+    // 2. User is NOT admin (doesn't have inventory or dashboard links)
+    // 3. User is not on login/register page (doesn't have register link when logged in would be false)
+    return hasLogout && !hasInventory && !hasDashboard;
+  }
 
   // Chatbot state
   let isOpen = false;
@@ -67,7 +85,10 @@
 
   // Initialize chatbot when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    initChatbot();
+    // Only initialize if user should see chatbot
+    if (shouldShowChatbot()) {
+      initChatbot();
+    }
   });
 
   function initChatbot() {

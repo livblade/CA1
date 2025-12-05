@@ -77,82 +77,81 @@
       </div>
     </div>
 
-    <!-- Users Grid - Card Layout -->
+    <!-- Users Grid -->
     <div class="row g-4">
-      <% if (users && users.length > 0) { %>
-        <% users.forEach(function(u) { %>
-          <div class="col-12 col-md-6 col-lg-4">
-            <div class="product-card user-card">
-              <div class="product-card-body">
-                <!-- User Badge -->
-                <span class="category-badge <%= u.role === 'admin' ? 'badge-admin' : 'badge-user' %>">
-                  <%= u.role === 'admin' ? '👑 Admin' : '👤 User' %>
+      <% users.forEach(function(userData) { %>
+        <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+          <div class="user-card">
+            <div class="product-card-body">
+              <!-- User Avatar -->
+              <div class="user-avatar" style="margin: 0 auto 1rem auto;">
+                <%= userData.username.charAt(0).toUpperCase() %>
+              </div>
+
+              <!-- User Name -->
+              <h5 class="user-card-name text-center">
+                <a href="/users/<%= userData.id %>"><%= userData.username %></a>
+              </h5>
+
+              <!-- Role Badge -->
+              <div class="text-center mb-3">
+                <span class="category-badge <%= userData.role === 'admin' ? 'badge-admin' : 'badge-user' %>">
+                  <%= userData.role === 'admin' ? '👑 Admin' : '👤 User' %>
                 </span>
+              </div>
+
+              <!-- User Details -->
+              <div class="user-card-detail">
+                <span>📧</span>
+                <span style="word-break: break-all;"><%= userData.email %></span>
+              </div>
+
+              <% if (userData.contact) { %>
+                <div class="user-card-detail">
+                  <span>📞</span>
+                  <span><%= userData.contact %></span>
+                </div>
+              <% } %>
+
+              <% if (userData.address) { %>
+                <div class="user-card-detail">
+                  <span>📍</span>
+                  <span style="word-break: break-word;"><%= userData.address %></span>
+                </div>
+              <% } %>
+
+              <!-- User Actions -->
+              <div class="admin-actions" style="margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                <a href="/users/<%= userData.id %>" class="btn btn-primary btn-sm" style="grid-column: 1 / -1;">
+                  👁️ View Details
+                </a>
                 
-                <!-- User Info -->
-                <h5 class="user-card-name">
-                  <a href="/users/<%= u.id %>"><%= u.username %></a>
-                </h5>
-                
-                <p class="user-card-email">
-                  📧 <%= u.email %>
-                </p>
-                
-                <% if (u.contact) { %>
-                  <p class="user-card-detail">
-                    📞 <%= u.contact %>
-                  </p>
+                <!-- Promote/Demote Button - Only show appropriate action -->
+                <% if (userData.role === 'user') { %>
+                  <form method="POST" action="/users/promote/<%= userData.id %>" style="grid-column: 1 / -1;">
+                    <button type="submit" class="btn btn-success btn-sm w-100" 
+                            onclick="return confirm('Promote <%= userData.username %> to admin?')">
+                      ⬆️ Promote to Admin
+                    </button>
+                  </form>
+                <% } else if (userData.role === 'admin') { %>
+                  <form method="POST" action="/users/demote/<%= userData.id %>" style="grid-column: 1 / -1;">
+                    <button type="submit" class="btn btn-warning btn-sm w-100" 
+                            onclick="return confirm('Demote <%= userData.username %> to user?')">
+                      ⬇️ Demote to User
+                    </button>
+                  </form>
                 <% } %>
                 
-                <% if (u.address) { %>
-                  <p class="user-card-detail">
-                    📍 <%= u.address.length > 50 ? u.address.substring(0,50) + '...' : u.address %>
-                  </p>
-                <% } %>
-
-                <!-- User ID Info -->
-                <div class="admin-info-grid" style="margin-top: 1rem;">
-                  <div class="admin-info-item">
-                    <span class="admin-info-label">User ID</span>
-                    <span class="admin-info-value">#<%= u.id %></span>
-                  </div>
-                  <div class="admin-info-item">
-                    <span class="admin-info-label">Status</span>
-                    <span class="admin-info-value" style="font-size: 1rem; color: #10B981;">✓ Active</span>
-                  </div>
-                </div>
-
-                <!-- User Actions -->
-                <div class="admin-actions">
-                  <a href="/users/<%= u.id %>" class="btn btn-primary btn-sm">
-                    👁️ View
-                  </a>
-                  <a href="/users/edit/<%= u.id %>" class="btn btn-success btn-sm">
-                    ✏️ Edit
-                  </a>
-                  <% if (u.id !== user.userId && u.id !== user.id) { %>
-                    <a href="/users/delete/<%= u.id %>" 
-                       class="btn btn-danger btn-sm" 
-                       onclick="return confirm('Delete user <%= u.username %>?')"
-                       title="Delete">
-                      🗑️ Delete
-                    </a>
-                  <% } %>
-                </div>
+                <a href="/users/delete/<%= userData.id %>" class="btn btn-danger btn-sm" style="grid-column: 1 / -1;"
+                   onclick="return confirm('Delete <%= userData.username %>?')">
+                  🗑️ Delete User
+                </a>
               </div>
             </div>
           </div>
-        <% }); %>
-      <% } else { %>
-        <div class="col-12">
-          <div class="empty-state">
-            <div class="empty-state-icon">👥</div>
-            <h3>No users found</h3>
-            <p>Try adjusting your search or add a new user</p>
-            <a href="/register" class="btn btn-success">Add New User</a>
-          </div>
         </div>
-      <% } %>
+      <% }); %>
     </div>
   </div>
 

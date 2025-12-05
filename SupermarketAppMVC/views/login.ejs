@@ -36,8 +36,8 @@
   <div class="container mt-5">
     <div class="row justify-content-center">
       <div class="col-md-5">
-        <div style="background: white; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-          <h2 class="text-center mb-4" style="color: #1e40af; font-weight: 700;">Login</h2>
+        <div class="form-container">
+          <h2 class="text-center mb-4" style="color: var(--primary-blue); font-weight: 700;">Login</h2>
           
           <!-- Display error messages -->
           <% if (errors && errors.length > 0) { %>
@@ -71,8 +71,8 @@
             <button type="submit" class="btn btn-primary w-100">Login</button>
           </form>
           
-          <p class="text-center mt-3" style="color: #6b7280;">
-            Don't have an account? <a href="/register">Register here</a>
+          <p class="text-center mt-3 login-footer-text">
+            Don't have an account? <a href="/register" class="login-link">Register here</a>
           </p>
         </div>
       </div>

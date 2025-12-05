@@ -169,5 +169,95 @@ module.exports = {
     // Fallback helper (kept for compatibility with app code that may call it)
     getUserByEmailAndPassword: (email, password, cb) => {
         return userModel.getUserByEmailAndPassword(email, password, cb);
+    },
+
+    // NEW: Promote user to admin
+    promoteToAdmin: (req, res, next) => {
+        const userId = req.params.id;
+        
+        // Prevent promoting yourself (optional safeguard)
+        const currentUserId = req.session.user && (req.session.user.userId || req.session.user.id);
+        
+        userModel.getUserById(userId, (err, result) => {
+            if (err) return next(err);
+            
+            const targetUser = Array.isArray(result) ? result[0] : result;
+            if (!targetUser) {
+                req.flash('error', 'User not found');
+                return res.redirect('/users');
+            }
+            
+            if (targetUser.role === 'admin') {
+                req.flash('info', 'User is already an admin');
+                return res.redirect('/users');
+            }
+            
+            // Update role to admin using existing updateUser method
+            userModel.updateUser(
+                userId,
+                targetUser.username,
+                targetUser.email,
+                null, // don't change password
+                targetUser.address,
+                targetUser.contact,
+                'admin', // change role to admin
+                null, // don't change image
+                (err2) => {
+                    if (err2) {
+                        req.flash('error', 'Unable to promote user');
+                        return next(err2);
+                    }
+                    req.flash('success', `${targetUser.username} has been promoted to admin`);
+                    return res.redirect('/users');
+                }
+            );
+        });
+    },
+
+    // NEW: Demote admin to user
+    demoteToUser: (req, res, next) => {
+        const userId = req.params.id;
+        const currentUserId = req.session.user && (req.session.user.userId || req.session.user.id);
+        
+        // Prevent demoting yourself
+        if (parseInt(userId) === parseInt(currentUserId)) {
+            req.flash('error', 'You cannot demote yourself');
+            return res.redirect('/users');
+        }
+        
+        userModel.getUserById(userId, (err, result) => {
+            if (err) return next(err);
+            
+            const targetUser = Array.isArray(result) ? result[0] : result;
+            if (!targetUser) {
+                req.flash('error', 'User not found');
+                return res.redirect('/users');
+            }
+            
+            if (targetUser.role === 'user') {
+                req.flash('info', 'User is already a regular user');
+                return res.redirect('/users');
+            }
+            
+            // Update role to user
+            userModel.updateUser(
+                userId,
+                targetUser.username,
+                targetUser.email,
+                null,
+                targetUser.address,
+                targetUser.contact,
+                'user', // change role to user
+                null,
+                (err2) => {
+                    if (err2) {
+                        req.flash('error', 'Unable to demote admin');
+                        return next(err2);
+                    }
+                    req.flash('success', `${targetUser.username} has been demoted to user`);
+                    return res.redirect('/users');
+                }
+            );
+        });
     }
 };

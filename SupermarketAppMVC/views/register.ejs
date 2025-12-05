@@ -37,9 +37,9 @@
   <div class="container mt-5">
     <div class="row justify-content-center">
       <div class="col-md-6">
-        <!-- Registration form card with white background and shadow -->
-        <div style="background: white; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-          <h2 class="text-center mb-4" style="color: #1e40af; font-weight: 700;">Create Account</h2>
+        <!-- Registration form card -->
+        <div class="form-container">
+          <h2 class="text-center mb-4" style="color: var(--primary-blue); font-weight: 700;">Create Account</h2>
           
           <!-- Display error messages if validation fails -->
           <% if (messages && messages.length > 0) { %>
@@ -88,22 +88,16 @@
                      value="<%= (formData && formData.contact) ? formData.contact : '' %>">
             </div>
 
-            <!-- Role selection - user or admin -->
-            <div class="mb-4">
-              <label for="role" class="form-label filter-label">Role</label>
-              <select id="role" name="role" class="form-select" required>
-                <option value="user" <%= (formData && formData.role === 'user') ? 'selected' : '' %>>User</option>
-                <option value="admin" <%= (formData && formData.role === 'admin') ? 'selected' : '' %>>Admin</option>
-              </select>
-            </div>
+            <!-- Role selection - REMOVED admin option, all signups are users -->
+            <input type="hidden" name="role" value="user">
 
             <!-- Submit button -->
             <button type="submit" class="btn btn-success w-100">Register</button>
           </form>
           
           <!-- Link to login page for existing users -->
-          <p class="text-center mt-3" style="color: #6b7280;">
-            Already have an account? <a href="/login">Login here</a>
+          <p class="text-center mt-3 login-footer-text">
+            Already have an account? <a href="/login" class="login-link">Login here</a>
           </p>
         </div>
       </div>

@@ -198,6 +198,16 @@ app.post('/users/update/:id', checkAuthenticated, checkAdmin, upload.single('ima
     return userController.updateUser(req, res, next);
 });
 
+// NEW: Promote user to admin
+app.post('/users/promote/:id', checkAuthenticated, checkAdmin, (req, res, next) => {
+    return userController.promoteToAdmin(req, res, next);
+});
+
+// NEW: Demote admin to user
+app.post('/users/demote/:id', checkAuthenticated, checkAdmin, (req, res, next) => {
+    return userController.demoteToUser(req, res, next);
+});
+
 app.get('/users/delete/:id', checkAuthenticated, checkAdmin, (req, res, next) => {
     return userController.deleteUser(req, res, next);
 });

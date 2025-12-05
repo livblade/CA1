@@ -40,89 +40,108 @@
   <div class="container mt-4">
     <!-- Page header -->
     <div class="page-header">
-      <h2>Add New Product</h2>
+      <h2>📦 Add New Product</h2>
     </div>
 
-    <!-- Display error messages -->
-    <% if (errors && errors.length > 0) { %>
-      <% errors.forEach(function(error) { %>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-          <%= error %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <!-- Add product form with improved styling -->
+    <div class="admin-form-container">
+      <div class="admin-form-header">
+        <h2>Product Information</h2>
+      </div>
+
+      <!-- Display error messages -->
+      <% if (errors && errors.length > 0) { %>
+        <% errors.forEach(function(error) { %>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        <% }); %>
+      <% } %>
+
+      <!-- Display success messages -->
+      <% if (messages && messages.length > 0) { %>
+        <% messages.forEach(function(message) { %>
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= message %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        <% }); %>
+      <% } %>
+
+      <form action="/addProduct" method="POST" enctype="multipart/form-data">
+        
+        <!-- Basic Information Section -->
+        <div class="admin-form-section">
+          <h3 class="admin-form-section-title">📝 Basic Information</h3>
+          
+          <div class="mb-3">
+            <label for="name" class="filter-label">Product Name *</label>
+            <input type="text" class="form-control" id="name" name="name" required placeholder="Enter product name">
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="category" class="filter-label">Category *</label>
+              <select class="form-select" id="category" name="category" required>
+                <option value="">Select category...</option>
+                <option value="Fruit">🍎 Fruit</option>
+                <option value="Vegetable">🥦 Vegetable</option>
+                <option value="Meat">🥩 Meat</option>
+                <option value="Dairy">🥛 Dairy</option>
+                <option value="Bakery">🍞 Bakery</option>
+                <option value="Other">📦 Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="price" class="filter-label">Price ($) *</label>
+              <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required placeholder="0.00">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="filter-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Product description..."></textarea>
+            <small class="text-muted">Provide a brief description of the product</small>
+          </div>
         </div>
-      <% }); %>
-    <% } %>
 
-    <!-- Display success messages -->
-    <% if (messages && messages.length > 0) { %>
-      <% messages.forEach(function(message) { %>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-          <%= message %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <!-- Inventory Section -->
+        <div class="admin-form-section">
+          <h3 class="admin-form-section-title">📊 Inventory</h3>
+          
+          <div class="mb-3">
+            <label for="quantity" class="filter-label">Stock Quantity *</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" min="0" step="1" required placeholder="0">
+            <small class="text-muted">Number of units available in stock</small>
+          </div>
         </div>
-      <% }); %>
-    <% } %>
 
-    <!-- Add product form - submits to /addProduct with multipart encoding for image upload -->
-    <form action="/addProduct" method="POST" enctype="multipart/form-data" 
-          style="max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <!-- Product Image Section -->
+        <div class="admin-form-section">
+          <h3 class="admin-form-section-title">🖼️ Product Image</h3>
+          
+          <div class="mb-3">
+            <label for="image" class="filter-label">Upload Image *</label>
+            <input class="form-control" type="file" id="image" name="image" accept="image/*" required>
+            <small class="text-muted">Accepted formats: JPG, PNG, GIF (Max 5MB)</small>
+          </div>
+        </div>
 
-      <!-- Product name field - required -->
-      <div class="mb-3">
-        <label for="name" class="filter-label">Product Name</label>
-        <input type="text" class="form-control" id="name" name="name" required placeholder="Enter product name">
-      </div>
-
-      <!-- Quantity field - numeric input, minimum 0 -->
-      <div class="mb-3">
-        <label for="quantity" class="filter-label">Quantity</label>
-        <input type="number" class="form-control" id="quantity" name="quantity" min="0" step="1" required placeholder="0">
-      </div>
-
-      <!-- Price field - allows decimals for cents -->
-      <div class="mb-3">
-        <label for="price" class="filter-label">Price ($)</label>
-        <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required placeholder="0.00">
-      </div>
-
-      <!-- Description textarea - optional, allows detailed product information -->
-      <div class="mb-3">
-        <label for="description" class="filter-label">Description</label>
-        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Product description..."></textarea>
-      </div>
-
-      <!-- Category dropdown - required, helps with filtering and organization -->
-      <div class="mb-3">
-        <label for="category" class="filter-label">Category</label>
-        <select class="form-select" id="category" name="category" required>
-          <option value="">Select category...</option>
-          <option value="Fruit">Fruit</option>
-          <option value="Vegetable">Vegetable</option>
-          <option value="Meat">Meat</option>
-          <option value="Dairy">Dairy</option>
-          <option value="Bakery">Bakery</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-
-      <!-- Image upload field - required for visual product display -->
-      <div class="mb-4">
-        <label for="image" class="filter-label">Product Image</label>
-        <input class="form-control" type="file" id="image" name="image" accept="image/*" required>
-        <small class="text-muted">Accepted formats: JPG, PNG, GIF</small>
-      </div>
-
-      <!-- Submit button -->
-      <div class="d-grid gap-2">
-        <button type="submit" class="btn btn-success">Add Product</button>
-        <a href="/inventory" class="btn btn-outline-primary">Cancel</a>
-      </div>
-
-    </form>
+        <!-- Form Actions -->
+        <div class="admin-form-actions">
+          <button type="submit" class="btn btn-success">
+            ✅ Add Product
+          </button>
+          <a href="/inventory" class="btn btn-outline-secondary">
+            ❌ Cancel
+          </a>
+        </div>
+      </form>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Dark mode theme manager -->
   <script src="/js/theme.js"></script>
 </body>
 </html>

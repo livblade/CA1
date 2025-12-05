@@ -44,62 +44,90 @@
     </div>
 
     <div class="page-header">
-      <h2>All Customer Orders</h2>
+      <h2>📋 All Orders</h2>
     </div>
 
     <% if (!orders || orders.length === 0) { %>
-      <div style="text-align: center; padding: 3rem; background: white; border-radius: 0.75rem;">
-        <p style="font-size: 1.25rem; color: #6b7280;">No orders have been placed yet.</p>
-        <a href="/dashboard" class="btn btn-primary mt-3">Back to Dashboard</a>
+      <div class="empty-state">
+        <div class="empty-state-icon">📦</div>
+        <h3>No orders yet</h3>
+        <p>No customers have placed orders yet</p>
+        <a href="/dashboard" class="btn btn-primary">← Back to Dashboard</a>
       </div>
     <% } else { %>
-      <div class="row">
-        <% orders.forEach(function(order) { %>
-          <div class="col-md-6 mb-4">
-            <div class="product-card">
-              <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                  <h5 style="color: #1e40af; margin: 0;">Order #<%= order.orderId %></h5>
-                  <small style="color: #6b7280;">
-                    <%= new Date(order.createdAt).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    }) %>
-                  </small>
+      <!-- Centered container for orders -->
+      <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+          <div class="row g-4">
+            <% orders.forEach(function(order) { %>
+              <div class="col-12 col-lg-6">
+                <div class="product-card order-card">
+                  <div class="product-card-body">
+                    <!-- Order Header with Customer Info -->
+                    <div class="order-card-header" style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 2px solid var(--border-color);">
+                      <div style="flex: 1;">
+                        <h5 class="order-id" style="font-size: 1.25rem; font-weight: 700; margin: 0 0 0.5rem 0;">
+                          Order #<%= order.orderId %>
+                        </h5>
+                        <p class="order-customer-name" style="margin: 0.25rem 0;">
+                          <strong>👤 Customer:</strong> <%= order.username %>
+                        </p>
+                        <p class="order-date" style="font-size: 0.875rem; margin: 0.25rem 0;">
+                          <%= new Date(order.createdAt).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          }) %>
+                        </p>
+                      </div>
+                      <div class="order-total-badge" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; padding: 0.75rem 1.25rem; border-radius: 3rem; font-size: 1.25rem; font-weight: 700; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                        $<%= parseFloat(order.total).toFixed(2) %>
+                      </div>
+                    </div>
+
+                    <!-- Customer Contact Info -->
+                    <div class="order-customer-details">
+                      <p><strong>📧 Email:</strong> <%= order.email %></p>
+                      <% if (order.contact) { %>
+                        <p><strong>📞 Contact:</strong> <%= order.contact %></p>
+                      <% } %>
+                      <% if (order.address) { %>
+                        <p><strong>📍 Address:</strong> <%= order.address %></p>
+                      <% } %>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="order-items-list" style="margin-top: 1rem;">
+                      <h6 class="order-items-title" style="font-weight: 700; margin-bottom: 0.75rem; color: var(--primary-blue);">
+                        📦 Items Ordered:
+                      </h6>
+                      <ul class="order-items" style="list-style: none; padding: 0; margin: 0;">
+                        <% order.items.forEach(function(item) { %>
+                          <li class="order-item" style="background: var(--pale-blue); padding: 0.75rem; margin-bottom: 0.5rem; border-radius: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                            <span class="order-item-name" style="font-weight: 600; flex: 1;"><%= item.productName %></span>
+                            <span class="order-item-details" style="font-size: 0.875rem; text-align: right;">
+                              <%= item.quantity %> × $<%= parseFloat(item.price).toFixed(2) %>
+                              = <strong style="color: var(--primary-green);">$<%= (parseFloat(item.price) * parseInt(item.quantity)).toFixed(2) %></strong>
+                            </span>
+                          </li>
+                        <% }); %>
+                      </ul>
+                    </div>
+
+                    <!-- Order Actions -->
+                    <div class="order-card-actions" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                      <a href="/admin/invoice/<%= order.orderId %>" class="btn btn-primary w-100">
+                        📄 View Full Invoice
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                <span class="badge-blue" style="font-size: 1.1rem;">
-                  $<%= parseFloat(order.total).toFixed(2) %>
-                </span>
               </div>
-
-              <div class="mb-3">
-                <strong style="color: #1e40af;">Customer:</strong>
-                <p style="margin: 0.25rem 0;"><%= order.username %> (<%= order.email %>)</p>
-              </div>
-
-              <div class="mb-3">
-                <strong style="color: #1e40af;">Items:</strong>
-                <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
-                  <% order.items.forEach(function(item) { %>
-                    <li style="margin-bottom: 0.25rem;">
-                      <%= item.productName %> 
-                      <span style="color: #6b7280;">
-                        (Qty: <%= item.quantity %> × $<%= parseFloat(item.price).toFixed(2) %>)
-                      </span>
-                    </li>
-                  <% }); %>
-                </ul>
-              </div>
-
-              <div class="text-end">
-                <a href="/admin/invoice/<%= order.orderId %>" class="btn btn-primary btn-sm">View Invoice</a>
-              </div>
-            </div>
+            <% }); %>
           </div>
-        <% }); %>
+        </div>
       </div>
     <% } %>
   </div>
